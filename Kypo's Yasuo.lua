@@ -73,8 +73,8 @@ function Yasuo:LoadMenu()
 	self.Menu.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
 	
 	self.Menu:MenuElement({id = "AutoR", name = "Auto R Champs", type = MENU})
-	self.Menu.AutoR:MenuElement({id = "AutoRXEnable", name = "Q", value = true, leftIcon = Q3Icon})
-	self.Menu.AutoR:MenuElement({id = "AutoRX", name = "Use R if champs are UP", value = 3, min = 2, max = 5, step = 1, leftIcon = Q3Icon})
+	self.Menu.AutoR:MenuElement({id = "AutoRXEnable", name = "R", value = true, leftIcon = RIcon})
+	self.Menu.AutoR:MenuElement({id = "AutoRX", name = "Use R if champs are UP", value = 3, min = 2, max = 5, step = 1, leftIcon = RIcon})
 	
 	self.Menu:MenuElement({id = "Lasthit", name = "Lasthit", type = MENU})
 	self.Menu.Lasthit:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
@@ -100,9 +100,6 @@ function Yasuo:LoadMenu()
 	self.Menu:MenuElement({id = "isCC", name = "CC Settings", type = MENU})
 	self.Menu.isCC:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	self.Menu.isCC:MenuElement({id = "UseQ3", name = "Q3", value = true, leftIcon = Q3Icon})
-	self.Menu.isCC:MenuElement({id = "blank", type = SPACE , name = ""})
-	self.Menu.isCC:MenuElement({id = "blank", type = SPACE , name = "Will use Spell on:"})
-	self.Menu.isCC:MenuElement({id = "blank", type = SPACE , name = "Stun, Snare, Taunt, Charm, Knockup.."})
 	
 	self.Menu:MenuElement({id = "Drawings", name = "Drawings", type = MENU})
 	--Q
@@ -115,13 +112,14 @@ function Yasuo:LoadMenu()
     self.Menu.Drawings.E:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     self.Menu.Drawings.E:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
     self.Menu.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(255, 255, 168, 51)})
-	
 	--R
 	self.Menu.Drawings:MenuElement({id = "R", name = "Draw R range", type = MENU, leftIcon = WIcon})
     self.Menu.Drawings.R:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     self.Menu.Drawings.R:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
     self.Menu.Drawings.R:MenuElement({id = "Color", name = "Color", color = Draw.Color(255, 255, 168, 51)})
+	
 	self.Menu.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
+    self.Menu.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 
 	self.Menu:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
 	self.Menu:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
@@ -325,7 +323,7 @@ if self.Menu.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, 1200, self.
 					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
 					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
 					local xPosStart = barPos.x + barXOffset + percentHealthAfterDamage * 100
-					Draw.Line(xPosStart, barPos.y + barYOffset, xPosEnd, barPos.y + barYOffset, 10, Draw.Color(0xFF00FF00))
+					Draw.Line(xPosStart, barPos.y + barYOffset, xPosEnd, barPos.y + barYOffset, 10, self.Menu.Drawings.HPColor:Value())
 				end
 			end
 		end	

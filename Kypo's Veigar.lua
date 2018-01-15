@@ -119,7 +119,7 @@ function Veigar:LoadMenu()
     self.Menu.Drawings.R:MenuElement({id = "Color", name = "Color", color = Draw.Color(180, 227, 29, 191)})
 
 	self.Menu.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
-    self.Menu.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(255, 200, 200, 25)})
+    self.Menu.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 
 	self.Menu:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
 	self.Menu:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
