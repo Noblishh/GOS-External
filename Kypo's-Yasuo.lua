@@ -1,5 +1,3 @@
-local ver = "1.1"
-
 local Heroes = {"Yasuo"}
 
 require "DamageLib"
@@ -9,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.1","Kypo's","8.1"
+local Version,Author,LVersion = "v1.0.1","Kypo's","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -84,11 +82,12 @@ function Yasuo:LoadMenu()
 	self.Menu.Lasthit:MenuElement({id = "lasthitActive", name = "Lasthit key", key = string.byte("X")})
 	
 	self.Menu:MenuElement({id = "Flee", name = "Flee", type = MENU})
-	self.Menu.Flee:MenuElement({id = "UseE", name = "E on minions", value = true, leftIcon = EIcon})
+	self.Menu.Flee:MenuElement({id = "UseE", name = "E on minions/gapclose", value = true, leftIcon = EIcon})
 	self.Menu.Flee:MenuElement({id = "fleeActive", name = "Flee key", key = string.byte("T")})
 	
 	self.Menu:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
 	self.Menu.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
+	self.Menu.Killsteal:MenuElement({id = "UseQ3", name = "Q3", value = true, leftIcon = Q3Icon})
 	self.Menu.Killsteal:MenuElement({id = "UseE", name = "E (OP!)", value = true, leftIcon = EIcon})
 	
 	self.Menu.Killsteal:MenuElement({id = "RR", name = "Use R on", value = true, type = MENU, leftIcon = RIcon})
@@ -102,6 +101,33 @@ function Yasuo:LoadMenu()
 	self.Menu:MenuElement({id = "isCC", name = "CC Settings", type = MENU})
 	self.Menu.isCC:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	self.Menu.isCC:MenuElement({id = "UseQ3", name = "Q3", value = true, leftIcon = Q3Icon})
+	
+    self.Menu:MenuElement({type = MENU, name = "Windwall",  id = "Windwall"})
+        		self.Menu.Windwall:MenuElement({id = "Enable", name = "Enabled", value = true})
+        		self.Menu.Windwall:MenuElement({type = MENU, id = "DetectedSpells", name = "Spells"})
+        			self.Menu.Windwall.DetectedSpells:MenuElement({id = "info", name = "Detecting Spells, Please Wait...", drop = {" "}})
+        				do
+        					local Delay = Game.Timer() > 10 and 0 or 10 - Game.Timer()
+						local Added = false
+						DelayAction(function()
+        						for i, enemy in pairs(Yasuo:WGetEnemyHeroes()) do
+        							if Yasuo.SpellData[enemy.charName] then
+        								for i, v in pairs(Yasuo.SpellData[enemy.charName]) do
+        									if enemy and v then
+        										local SlotToStr = ({[_Q] = "Q", [_W] = "W", [_E] = "E", [_R] = "R"})[v.slot]
+        										self.Menu.Windwall.DetectedSpells:MenuElement({type = MENU, id = v.name, name = enemy.charName.." | "..SlotToStr.." | "..v.name, value = true})
+        										self.Menu.Windwall.DetectedSpells[v.name]:MenuElement({id = "Use", name = "Enabled", value = true})
+        										Added = true
+        									end
+        								end
+        							end
+        						end
+        					self.Menu.Windwall.DetectedSpells.info:Remove()
+        					if not Added then
+        						self.Menu.Windwall.DetectedSpells:MenuElement({id = "info", name = "No Spells Detected", drop = {" "}})
+        					end
+        					end, Delay)
+        				end
 	
 	self.Menu:MenuElement({id = "Drawings", name = "Drawings", type = MENU})
 	--Q
@@ -189,11 +215,6 @@ function IsRecalling()
 	return false
 end
 
-function ValidTarget(target, range)
-	range = range and range or math.huge
-	return target ~= nil and target.valid and target.visible and not target.dead and target.distance <= range
-end
-
 function Yasuo:Tick()
     if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true then return end
 	if self.Menu.Harass.harassActive:Value() then
@@ -202,16 +223,20 @@ function Yasuo:Tick()
 	if self.Menu.Flee.fleeActive:Value() then
 		self:Flee()
 	end
+	if self.Menu.Windwall.Enable:Value() then
+		self:Windwall()
+	end
 	if self.Menu.Combo.comboActive:Value() then
 		self:Combo()
 	end
 	if self.Menu.Clear.clearActive:Value() then
-		self:Jungle()
+		self:Clear()
 	end
 	if self.Menu.Lasthit.lasthitActive:Value() then
 		self:Lasthit()
 	end
 		self:KillstealQ()
+		self:KillstealQ3()
 		self:KillstealE()
 		self:SpellonCCQ3()
 		self:AutoRX()
@@ -238,6 +263,324 @@ function Yasuo:GetValidMinion(range)
     	end
     	return false
 end
+
+function Yasuo:Windwall()
+		for i = 1, Game.MissileCount() do
+			local spell = nil
+			local obj = Game.Missile(i)
+			local data = obj.missileData
+			local source = Yasuo:GetHeroByHandle(data.owner)
+			if source then 
+				if Yasuo.SpellData[source.charName] then
+					spell = Yasuo.SpellData[source.charName][data.name:lower()]
+				end
+				if spell and not spell.isSkillshot and data.target == myHero.handle then
+					if self.Menu.Windwall.DetectedSpells[spell.name].Use:Value() then
+					Control.CastSpell(HK_W, obj.pos)
+					return
+					end
+				end
+				if spell and spell.isSkillshot and obj.isEnemy and data.speed and data.width and data.endPos and obj.pos then
+					if self.Menu.Windwall.DetectedSpells[spell.name].Use:Value() then
+						local pointSegment, pointLine, isOnSegment = VectorPointProjectionOnLineSegment(obj.pos, data.endPos, myHero.pos)
+						if isOnSegment and myHero.pos:DistanceTo(Vector(pointSegment.x, myHero.pos.y, pointSegment.y)) < data.width + myHero.boundingRadius then
+						Control.CastSpell(HK_W, obj.pos)
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	Yasuo.SpellData = {
+		["Aatrox"] = {
+			["aatroxeconemissile"] = {slot = 2, name = "Blade of Torment", isSkillshot = true}
+		},
+		["Ahri"] = {
+			["ahriorbmissile"] = { slot = 0, name = "Orb of Deception", isSkillshot = true },
+			["ahrifoxfiremissiletwo"] = {slot = 1, name = "Fox-Fire", isSkillshot = false},
+			["ahriseducemissile"] = {slot = 2, name = "Charm", isSkillshot = true},
+			["ahritumblemissile"] = {slot = 3, name = "SpiritRush", isSkillshot = false}
+		},
+		["Akali"] = {
+			["akalimota"] = {slot = 0, name = "Mark of the Assasin", isSkillshot = false}
+		},
+		["Amumu"] = {
+			["sadmummybandagetoss"] = {slot = 0, name = "Bandage Toss", isSkillshot = true}
+		},
+		["Anivia"] = {
+			["flashfrostspell"] = {slot = 0, name = "Flash Frost", isSkillshot = true},
+			["frostbite"] = {slot = 2, name = "Frostbite", isSkillshot = false}
+		},
+		["Annie"] = {
+			["disintegrate"] = {slot = 0, name = "Disintegrate", isSkillshot = false}
+		},
+		["Ashe"] = {
+			["volleyattack"] = {slot = 1, name = "Volley", isSkillshot = true},
+			["enchantedcrystalarrow"] = {slot = 3, name = "Enchanted Crystal Arrow", isSkillshot = true}
+		},
+		["AurelionSol"] = {
+			["aurelionsolqmissile"] = {slot = 0, name = "Starsurge", isSkillshot = true}
+		},
+		["Bard"] = {
+			["bardqmissile"] = {slot = 0, name = "Cosmic Binding", isSkillshot = true}
+		},
+		["Blitzcrank"] = {
+			["rocketgrabmissile"] = {slot = 0, name = "Rocket Grab", isSkillshot = true}
+		},
+		["Brand"] = {
+			["brandqmissile"] = {slot = 0, name = "Sear", isSkillshot = true},
+			["brandr"] = {slot = 3, name = "Pyroclasm", isSkillshot = false}
+		},
+		["Braum"] = {
+			["braumqmissile"] = {slot = 0, name = "Winter's Bite", isSkillshot = true},
+			["braumrmissile"] = {slot = 3, name = "Glacial Fissure", isSkillshot = true}
+		},
+		["Caitlyn"] = {
+			["caitlynpiltoverpeacemaker"] = {slot = 0, name = "Piltover Peacemaker", isSkillshot = true},
+			["caitlynaceintheholemissile"] = {slot = 3, name = "Ace in the Hole", isSkillshot = false}
+		},
+		["Cassiopeia"] = {
+			["cassiopeiatwinfang"] = {slot = 2, name = "Twin Fang", isSkillshot = false}
+		},
+		["Nautilus"] = {
+			["nautilusanchordragmissile"] = {slot = 0, name = "", isSkillshot = true}
+		},
+		["Nidalee"] = {
+			["JavelinToss"] = {slot = 0, name = "Javelin Toss", isSkillshot = true}
+		},
+		["Nocturne"] = {
+			["nocturneduskbringer"] = {slot = 0, name = "Duskbringer", isSkillshot = true}
+		},
+		["Pantheon"] = {
+			["pantheonq"] = {slot = 0, name = "Spear Shot", isSkillshot = false}
+		},
+		["RekSai"] = {
+			["reksaiqburrowedmis"] = {slot = 0, name = "Prey Seeker", isSkillshot = true}
+		},
+		["Rengar"] = {
+			["rengarefinal"] = {slot = 2, name = "Bola Strike", isSkillshot = true}
+		},
+		["Riven"] = {
+			["rivenlightsabermissile"] = {slot = 3, name = "Wind Slash", isSkillshot = true}
+		},
+		["Rumble"] = {
+			["rumblegrenade"] = {slot = 2, name = "Electro Harpoon", isSkillshot = true}
+		},
+		["Ryze"] = {
+			["ryzeq"] = {slot = 0, name = "Overload", isSkillshot = true},
+			["ryzee"] = {slot = 2, name = "Spell Flux", isSkillshot = false}
+		},
+		["Sejuani"] = {
+			["sejuaniglacialprison"] = {slot = 3, name = "Glacial Prison", isSkillshot = true}
+		},
+		["Sivir"] = {
+			["sivirqmissile"] = {slot = 0, name = "Boomerang Blade", isSkillshot = true}
+		},
+		["Skarner"] = {
+			["skarnerfracturemissile"] = {slot = 0, name = "Fracture ", isSkillshot = true}
+		},
+		["Shaco"] = {
+			["twoshivpoison"] = {slot = 2, name = "Two-Shiv Poison", isSkillshot = false}
+		},
+		["Sona"] = {
+			["sonaqmissile"] = {slot = 0, name = "Hymn of Valor", isSkillshot = false},
+			["sonar"] = {slot = 3, name = "Crescendo ", isSkillshot = true}
+		},
+		["Swain"] = {
+			["swaintorment"] = {slot = 2, name = "Torment", isSkillshot = false}
+		},
+		["Syndra"] = {
+			["syndrarspell"] = {slot = 3, name = "Unleashed Power", isSkillshot = false}
+		},
+		["Teemo"] = {
+			["blindingdart"] = {slot = 0, name = "Blinding Dart", isSkillshot = false}
+		},
+		["Tristana"] = {
+			["detonatingshot"] = {slot = 2, name = "Explosive Charge", isSkillshot = false}
+		},
+		["Corki"] = {
+			["phosphorusbombmissile"] = {slot = 0, name = "Phosphorus Bomb", isSkillshot = true},
+			["missilebarragemissile"] = {slot = 3, name = "Missile Barrage", isSkillshot = true},
+			["missilebarragemissile2"] = {slot = 3, name = "Big Missile Barrage", isSkillshot = true}
+		},
+		["Diana"] = {
+			["dianaarcthrow"] = {slot = 0, name = "Crescent Strike", isSkillshot = true}
+		},
+		["DrMundo"] = {
+			["infectedcleavermissile"] = {slot = 0, name = "Infected Cleaver", isSkillshot = true}
+		},
+		["Draven"] = {
+			["dravenr"] = {slot = 3, name = "Whirling Death", isSkillshot = true}
+		},
+		["Ekko"] = {
+			["ekkoqmis"] = {slot = 0, name = "Timewinder", isSkillshot = true}
+		},
+		["Elise"] = {
+			["elisehumanq"] = {slot = 0, name = "Neurotoxin", isSkillshot = false},
+			["elisehumane"] = {slot = 2, name = "Cocoon", isSkillshot = true}
+		},
+		["Ezreal"] = {
+			["ezrealmysticshotmissile"] = {slot = 0, name = "Mystic Shot", isSkillshot = true},
+			["ezrealessencefluxmissile"] = {slot = 1, name = "Essence Flux", isSkillshot = true},
+			["ezrealarcaneshiftmissile"] = {slot = 2, name = "Arcane Shift", isSkillshot = false},
+			["ezrealtrueshotbarrage"] = {slot = 3, name = "Trueshot Barrage", isSkillshot = true}
+		},
+		["FiddleSticks"] = {
+			["fiddlesticksdarkwindmissile"] = {slot = 2, name = "Dark Wind", isSkillshot = false}
+		},
+		["Gangplank"] = {
+			["parley"] = {slot = 0, name = "Parley", isSkillshot = false}
+		},
+		["Gnar"] = {
+			["gnarqmissile"] = {slot = 0, name = "Boomerang Throw", isSkillshot = true},
+			["gnarbigqmissile"] = {slot = 0, name = "Boulder Toss", isSkillshot = true}
+		},
+		["Gragas"] = {
+			["gragasqmissile"] = {slot = 0, name = "Barrel Roll", isSkillshot = true},
+			["gragasrboom"] = {slot = 3, name = "Explosive Cask", isSkillshot = true}
+		},
+		["Graves"] = {
+			["gravesqlinemis"] = {slot = 0, name = "End of the Line", isSkillshot = true},
+			["graveschargeshotshot"] = {slot = 3, name = "Collateral Damage", isSkillshot = true}
+		},
+		["Illaoi"] = {
+			["illaoiemis"] = {slot = 2, name = "Test of Spirit", isSkillshot = true}
+		},
+		["Irelia"] = {
+			["IreliaTranscendentBlades"] = {slot = 3, name = "Transcendent Blades", isSkillshot = true}
+		},
+		["Janna"] = {
+			["howlinggalespell"] = {slot = 0, name = "Howling Gale", isSkillshot = true},
+			["sowthewind"] = {slot = 1, name = "Zephyr", isSkillshot = false}
+		},
+		["Jayce"] = {
+			["jayceshockblastmis"] = {slot = 0, name = "Shock Blast", isSkillshot = true},
+			["jayceshockblastwallmis"] = {slot = 0, name = "Empowered Shock Blast", isSkillshot = true}
+		},
+		["Jinx"] = {
+			["jinxwmissile"] = {slot = 1, name = "Zap!", isSkillshot = true},
+			["jinxr"] = {slot = 3, name = "Super Mega Death Rocket!", isSkillshot = true}
+		},
+		["Jhin"] = {
+			["jhinwmissile"] = {slot = 1, name = "Deadly Flourish", isSkillshot = true},
+			["jhinrshotmis"] = {slot = 3, name = "Curtain Call's", isSkillshot = true}
+		},
+		["Kalista"] = {
+			["kalistamysticshotmis"] = {slot = 0, name = "Pierce", isSkillshot = true}
+		},
+		["Karma"] = {
+			["karmaqmissile"] = {slot = 0, name = "Inner Flame ", isSkillshot = true},
+			["karmaqmissilemantra"] = {slot = 0, name = "Mantra: Inner Flame", isSkillshot = true}
+		},
+		["Kassadin"] = {
+			["nulllance"] = {slot = 0, name = "Null Sphere", isSkillshot = false}
+		},
+		["Katarina"] = {
+			["katarinaqmis"] = {slot = 0, name = "Bouncing Blade", isSkillshot = false}
+		},
+		["Kayle"] = {
+			["judicatorreckoning"] = {slot = 0, name = "Reckoning", isSkillshot = false}
+		},
+		["Kennen"] = {
+			["kennenshurikenhurlmissile1"] = {slot = 0, name = "Thundering Shuriken", isSkillshot = true}
+		},
+		["Khazix"] = {
+			["khazixwmissile"] = {slot = 1, name = "Void Spike", isSkillshot = true}
+		},
+		["Kogmaw"] = {
+			["kogmawq"] = {slot = 0, name = "Caustic Spittle", isSkillshot = true},
+			["kogmawvoidoozemissile"] = {slot = 3, name = "Void Ooze", isSkillshot = true},
+		},
+		["Leblanc"] = {
+			["leblancchaosorbm"] = {slot = 0, name = "Shatter Orb", isSkillshot = false},
+			["leblancsoulshackle"] = {slot = 2, name = "Ethereal Chains", isSkillshot = true},
+			["leblancsoulshacklem"] = {slot = 2, name = "Ethereal Chains Clone", isSkillshot = true}
+		},
+		["LeeSin"] = {
+			["blindmonkqone"] = {slot = 0, name = "Sonic Wave", isSkillshot = true}
+		},
+		["Leona"] = {
+			["LeonaZenithBladeMissile"] = {slot = 2, name = "Zenith Blade", isSkillshot = true}
+		},
+		["Lissandra"] = {
+			["lissandraqmissile"] = {slot = 0, name = "Ice Shard", isSkillshot = true},
+			["lissandraemissile"] = {slot = 2, name = "Glacial Path ", isSkillshot = true}
+		},
+		["Lucian"] = {
+			["lucianwmissile"] = {slot = 1, name = "Ardent Blaze", isSkillshot = true},
+			["lucianrmissileoffhand"] = {slot = 3, name = "The Culling", isSkillshot = true}
+		},
+		["Lulu"] = {
+			["luluqmissile"] = {slot = 0, name = "Glitterlance", isSkillshot = true}
+		},
+		["Lux"] = {
+			["luxlightbindingmis"] = {slot = 0, name = "", isSkillshot = true}
+		},
+		["Malphite"] = {
+			["seismicshard"] = {slot = 0, name = "Seismic Shard", isSkillshot = false}
+		},
+		["MissFortune"] = {
+			["missfortunericochetshot"] = {slot = 0, name = "Double Up", isSkillshot = false}
+		},
+		["Morgana"] = {
+			["darkbindingmissile"] = {slot = 0, name = "Dark Binding ", isSkillshot = true}
+		},
+		["Nami"] = {
+			["namiwmissileenemy"] = {slot = 1, name = "Ebb and Flow", isSkillshot = false}
+		},
+		["Nunu"] = {
+			["iceblast"] = {slot = 2, name = "Ice Blast", isSkillshot = false}
+		},
+		["TahmKench"] = {
+			["tahmkenchqmissile"] = {slot = 0, name = "Tongue Lash", isSkillshot = true}
+		},
+		["Taliyah"] = {
+			["taliyahqmis"] = {slot = 0, name = "Threaded Volley", isSkillshot = true}
+		},
+		["Talon"] = {
+			["talonrakemissileone"] = {slot = 1, name = "Rake", isSkillshot = true}
+		},
+		["TwistedFate"] = {
+			["bluecardpreattack"] = {slot = 1, name = "Blue Card", isSkillshot = false},
+			["goldcardpreattack"] = {slot = 1, name = "Gold Card", isSkillshot = false},
+			["redcardpreattack"] = {slot = 1, name = "Red Card", isSkillshot = false}
+		},
+		["Urgot"] = {
+			--
+		},
+		["Varus"] = {
+			["varusqmissile"] = {slot = 0, name = "Piercing Arrow", isSkillshot = true},
+			["varusrmissile"] = {slot = 3, name = "Chain of Corruption", isSkillshot = true}
+		},
+		["Vayne"] = {
+			["vaynecondemnmissile"] = {slot = 2, name = "Condemn", isSkillshot = false}
+		},
+		["Veigar"] = {
+			["veigarbalefulstrikemis"] = {slot = 0, name = "Baleful Strike", isSkillshot = true},
+			["veigarr"] = {slot = 3, name = "Primordial Burst", isSkillshot = false}
+		},
+		["Velkoz"] = {
+			["velkozqmissile"] = {slot = 0, name = "Plasma Fission", isSkillshot = true},
+			["velkozqmissilesplit"] = {slot = 0, name = "Plasma Fission Split", isSkillshot = true}
+ 		},
+		["Viktor"] = {
+			["viktorpowertransfer"] = {slot = 0, name = "Siphon Power", isSkillshot = false},
+			["viktordeathraymissile"] = {slot = 2, name = "Death Ray", isSkillshot = true}
+		},
+		["Vladimir"] = {
+			["vladimirtidesofbloodnuke"] = {slot = 2, name = "Tides of Blood", isSkillshot = false}
+		},
+		["Yasuo"] = {
+			["yasuoq3w"] = {slot = 0, name = "Gathering Storm", isSkillshot = true}
+		},
+		["Zed"] = {
+			["zedqmissile"] = {slot = 0, name = "Razor Shuriken ", isSkillshot = true}
+		},
+		["Zyra"] = {
+			["zyrae"] = {slot = 2, name = "Grasping Roots", isSkillshot = true}
+		}
+	}
 
 function GetPercentHP(unit)
 	if type(unit) ~= "userdata" then error("{GetPercentHP}: bad argument #1 (userdata expected, got "..type(unit)..")") end
@@ -281,6 +624,26 @@ function Yasuo:GetValidMinion(range)
     	return false
 end
 
+function Yasuo:GetHeroByHandle(handle)
+	for i = 1, Game.HeroCount() do
+		local h = Game.Hero(i)
+		if h.handle == handle then
+			return h
+		end
+	end
+end
+
+function Yasuo:WGetEnemyHeroes()
+	local result = {}
+  	for i = 1, Game.HeroCount() do
+    		local unit = Game.Hero(i)
+    		if unit.isEnemy then
+    			result[#result + 1] = unit
+  		end
+  	end
+  	return result
+end
+
 function Yasuo:GetEnemyHeroes()
 	self.EnemyHeroes = {}
 	for i = 1, Game.HeroCount() do
@@ -302,6 +665,9 @@ function Yasuo:EnemyInRange(range)
 	return count
 end
 
+function Yasuo:dashpos(unit)
+	return myHero.pos + (unit.pos - myHero.pos):Normalized() * 600
+	end
 -----------------------------
 -- DRAWINGS
 -----------------------------
@@ -462,44 +828,50 @@ end
 -----------------------------
 -- Flee
 -----------------------------
-
 function Yasuo:Flee()
 	if self:CanCast(_E) then
-		local level = myHero:GetSpellData(_E).level	
-		local target = self:EnemyInRange(475)
-  		for i = 1, Game.MinionCount()do
-		local minion = Game.Minion(i)
-		if minion.isEnemy and minion.alive and minion.isTargetable and not HasBuff(minion, "YasuoDashWrapper") then
-			if myHero.pos:DistanceTo(minion.pos) < 475 and self.Menu.Flee.UseE:Value() then
-				Control.CastSpell(HK_E,minion.pos)
-        end
-        end
-        end
-        end
-        end
+			local minion = self:getminion()
+			if minion then
+				Control.CastSpell(HK_E,minion)
+			end
+		end
+	end
+	
+function Yasuo:getminion()
+		local gebest = nil
+		local perto = math.huge
+		for i = 1, Game.MinionCount() do
+			local minion = Game.Minion(i)
+			if Yasuo:ValidTarget(minion, 475) then
+				local rato = Yasuo:GetDistance(myHero.pos, mousePos)
+				local jogador = Yasuo:GetDistance(Yasuo:dashpos(minion), mousePos)
+				local enemigo = Yasuo:GetDistance(Yasuo:dashpos(minion), myHero.pos)
+				if jogador < rato and enemigo < perto and not HasBuff(minion, "YasuoDashWrapper") then
+					gebest = minion
+					perto = enemigo
+				end
+			end
+		end
+		return gebest
+	end
+	
+	function Yasuo:GetDistance(p1, p2)
+	local p2 = p2 or myHero.pos
+	return  math.sqrt(math.pow((p2.x - p1.x),2) + math.pow((p2.y - p1.y),2) + math.pow((p2.z - p1.z),2))
+end
 
-function Yasuo:GetGapCloseEnemiesHero(pos, range, target)
-for i = 1, Game.HeroCount()do
-  local hero = Game.Hero(i)
-  if hero.isEnemy and hero ~= target and hero.alive and hero.isTargetable then
-    if GetDistanceSqr(hero.pos, pos) <= 475 and GetDistanceSqr(myHero.pos, hero.pos) < 475 and not HasBuff(hero, "YasuoDashWrapper")then
-      return hero
-    end
-  end
-return false
-end
+function Yasuo:GetDistance2D(p1, p2)
+	local p2 = p2 or myHero.pos
+	return  math.sqrt(math.pow((p2.x - p1.x),2) + math.pow((p2.y - p1.y),2))
 end
 
-function Yasuo:GetGapCloseEnemiesMinions(pos, range)
-for i = 1, Game.MinionCount()do
-  local minion = Game.Minion(i)
-  if minion.isEnemy and minion.alive and minion.isTargetable then
-    if GetDistanceSqr(minion.pos, pos) <= 475 and GetDistanceSqr(myHero.pos, minion.pos) < 475 and not HasBuff(minion, "YasuoDashWrapper") then
-      return minion
-    end
-  end
-return false
-end
+
+function Yasuo:GetDistanceSqr(Pos1, Pos2)
+	local Pos2 = Pos2 or myHero.pos
+	local dx = Pos1.x - Pos2.x
+	local dz = (Pos1.z or Pos1.y) - (Pos2.z or Pos2.y)
+	return dx * dx + dz * dz
+
 end
 
 -----------------------------
@@ -516,18 +888,22 @@ function Yasuo:Combo()
 			    Control.CastSpell(HK_Q,castpos)
 		    else if myHero.pos:DistanceTo(target.pos) < 900 and HasBuff(myHero, "YasuoQ3W") then
 			    Control.CastSpell(HK_Q,castpos)
+				end
 			end
-	    end
-    end
-
-    local target = CurrentTarget(475)
+		end
+	end
+	
+	if self.Menu.Combo.UseE:Value() and self:CanCast(_E) and myHero.pos:DistanceTo(target.pos) < 2000 and self.Menu.Combo.comboActive:Value() and not HasBuff(myHero, "YasuoQ3W") then		
+	self:Flee()
+	end
+	
+	local target = CurrentTarget(475)
     if target == nil then return end
-    if self.Menu.Combo.UseE:Value() and target and self:CanCast(_E) then
-		if self:EnemyInRange(475) and not HasBuff(target, "YasuoDashWrapper") then
-			    Control.CastSpell(HK_E,target)
-		    end
-	    end
-    end
+	    if self.Menu.Combo.UseE:Value() and target and self:CanCast(_E) and not HasBuff(target, "YasuoDashWrapper") then
+	    if self:EnemyInRange(475) then
+			Control.CastSpell(HK_E,target)
+		end
+	end
 end
 
 -----------------------------
@@ -550,23 +926,27 @@ function Yasuo:Harass()
     end
 
 end
+
 -----------------------------
--- JUNGLE
+-- Clear
 -----------------------------
 
-function Yasuo:Jungle()
+function Yasuo:Clear()
 	for i = 1, Game.MinionCount() do
 	local minion = Game.Minion(i)
 	if minion and minion.team == 300 or minion.team ~= myHero.team then
 		if self:CanCast(_Q) then 
-			if self.Menu.Clear.UseQ:Value() and minion and self:CanCast(_Q) then
-				if ValidTarget(minion, 475) and myHero.pos:DistanceTo(minion.pos) < 475 then
+			if self.Menu.Clear.UseQ:Value() and minion then
+				if Yasuo:ValidTarget(minion, 475) and myHero.pos:DistanceTo(minion.pos) < 475 then
 					Control.CastSpell(HK_Q, minion)
+				else if myHero.pos:DistanceTo(minion.pos) < 900 and HasBuff(myHero, "YasuoQ3W") then
+					Control.CastSpell(HK_Q,	minion)
 					end
 				end
 			end
 		end
 	end
+end
 end
 
 -----------------------------
@@ -612,8 +992,8 @@ function Yasuo:QDMG()
 end
 
 function Yasuo:EDMG()
-    local level = myHero:GetSpellData(_W).level
-    local edamage = (({60,70,80,90,100})[level] + 0.2 * myHero.totalDamage)
+    local level = myHero:GetSpellData(_E).level
+    local edamage = (({55,65,75,85,90})[level] + 0.2 * myHero.totalDamage)
 	return edamage
 end
 
@@ -623,10 +1003,10 @@ function Yasuo:RDMG()
 	return rdamage
 end
 
-function Yasuo:IsValidTarget(unit,range) 
-	return unit ~= nil and unit.valid and unit.visible and not unit.dead and unit.isTargetable and not unit.isImmortal and unit.pos:DistanceTo(myHero.pos) <= 3340 
+function Yasuo:ValidTarget(unit,range)
+	local range = type(range) == "number" and range or math.huge
+	return unit and unit.team ~= myHero.team and unit.valid and unit.distance <= range and not unit.dead and unit.isTargetable and unit.visible
 end
-
 -----------------------------
 -- Q KS
 -----------------------------
@@ -649,6 +1029,24 @@ function Yasuo:KillstealQ()
 		end
 	end
 	end
+	end
+	end
+	
+function Yasuo:KillstealQ3()
+	local target = CurrentTarget(Q3.Range)
+	if target == nil then return end
+	if self.Menu.Killsteal.UseQ3:Value() and target and self:CanCast(_Q) then
+		if self:EnemyInRange(Q3.Range) then 
+			local level = myHero:GetSpellData(_Q).level	
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
+		   	local Qdamage = Yasuo:QDMG()
+				if Qdamage >= self:HpPred(target,1) + target.hpRegen * 1 and HasBuff(myHero, "YasuoQ3W") then
+			if (HitChance > 0 ) and self:CanCast(_Q) then
+			    Control.CastSpell(HK_Q,castpos)
+
+				end
+			end
+		end
 	end
 	end
 
@@ -680,7 +1078,7 @@ function Yasuo:SpellonCCQ3()
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
 			if ImmobileEnemy then
 			if (HitChance > 0 ) and HasBuff(myHero, "YasuoQ3W") then
-			    self:CastSpell(HK_Q,castpos)
+			    Control.CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -712,21 +1110,22 @@ end
 end
 
 function VectorPointProjectionOnLineSegment(v1, v2, v)
-  local cx, cy, ax, ay, bx, by = v.x, v.z, v1.x, v1.z, v2.x, v2.z
-  local rL = ((cx - ax) * (bx - ax) + (cy - ay) * (by - ay)) / ((bx - ax) * (bx - ax) + (by - ay) * (by - ay))
-  local pointLine = { x = ax + rL * (bx - ax), z = ay + rL * (by - ay) }
-  local rS = rL < 0 and 0 or (rL > 1 and 1 or rL)
-  local isOnSegment = rS == rL
-  local pointSegment = isOnSegment and pointLine or {x = ax + rS * (bx - ax), z = ay + rS * (by - ay)}
-  return pointSegment, pointLine, isOnSegment
+    local cx, cy, ax, ay, bx, by = v.x, (v.z or v.y), v1.x, (v1.z or v1.y), v2.x, (v2.z or v2.y)
+    local rL = ((cx - ax) * (bx - ax) + (cy - ay) * (by - ay)) / ((bx - ax) ^ 2 + (by - ay) ^ 2)
+    local pointLine = { x = ax + rL * (bx - ax), y = ay + rL * (by - ay) }
+    local rS = rL < 0 and 0 or (rL > 1 and 1 or rL)
+    local isOnSegment = rS == rL
+    local pointSegment = isOnSegment and pointLine or { x = ax + rS * (bx - ax), y = ay + rS * (by - ay) }
+    return pointSegment, pointLine, isOnSegment
 end
 
 
 function Yasuo:ClearQ3Count(range)
-for i = 1, Game.MinionCount()do
-  local minion = Game.Minion(i)
-  if minion.isEnemy and minion.alive and minion.isTargetable and GetDistanceSqr(myHero.pos, minion.pos) <= 900 then
-    if Yasuo:GetMinionCollision(minion.pos, 60) >= self.Menu.Clear.Q3Clear:Value()then
+		self:CanCast(_Q)
+		for i = 1, Game.MinionCount()do
+		local minion = Game.Minion(i)
+		if minion.isEnemy and minion.alive and minion.isTargetable and GetDistanceSqr(myHero.pos, minion.pos) <= 900 then
+		if Yasuo:linhaq3(900, 80) >= self.Menu.Clear.Q3Clear:Value()then
       return minion
     end
   end
@@ -734,23 +1133,34 @@ end
 return false
 end
 
-function Yasuo:GetMinionCollision(castPos, width, exclude)
-local Count = 0
-local w = (width + 48) * (width + 48)
-for i = Game.MinionCount(), 1, - 1 do
-  local minion = Game.Minion(i)
-  if minion.isEnemy and minion ~= exclude and minion.alive and minion.isTargetable  then
-    local pointSegment, pointLine, isOnSegment = VectorPointProjectionOnLineSegment(myHero.pos, castPos, minion.pos)
-    if isOnSegment and GetDistanceSqr(pointSegment, minion.pos) < w then
-      Count = Count + 1
-    end
-  end
+function Yasuo:linhaq3(range, width)
+	local pos, hit = nil, 0
+	for i = 1, Game.MinionCount() do
+		local minion = Game.Minion(i)
+		if minion and not minion.dead and minion.isEnemy then
+			local EP = myHero.pos:Extended(minion.pos, range)
+			local C = Yasuo:linhabichos(myHero.pos, EP, width)
+			if C > hit then
+				hit = C
+				pos = minion.pos
+			end
+		end
+	end
+	return pos, hit
 end
-return Count
+
+function Yasuo:linhabichos(sp, ep, width)
+        local c = 0
+        for i = 1, Game.MinionCount() do
+        	local minion = Game.Minion(i)
+        	if minion and not minion.dead and minion.isEnemy then
+        		local pointSegment, pointLine, isOnSegment = VectorPointProjectionOnLineSegment(sp, ep, minion.pos)
+        		if isOnSegment and Yasuo:GetDistanceSqr(pointSegment, minion.pos) < (width + minion.boundingRadius)^2 and Yasuo:GetDistanceSqr(sp, ep) > Yasuo:GetDistanceSqr(sp, minion.pos) then
+				c = c + 1
+			end
+        	end
+        end
+        return c
 end
 
 Callback.Add("Load",function() _G[myHero.charName]() end)
-
-if Update then
-Update("Kypo's-Yasuo",ver,"raw.githubusercontent.com","/Kypos/GOS-External/master/yasuo.version","/Kypos/GOS-External/master/Kypo's-Yasuo.lua", SCRIPT_PATH.."Kypo's-Yasuo.lua")
-end
