@@ -38,7 +38,7 @@ end
 
 class "Thresh"
 
-local HeroIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/e/e9/Dark_Star_Thresh_profileicon.png"
+local HeroIcon = "https://i.pinimg.com/736x/1a/34/84/1a34847f568b4d3fd8de06540e29a838--thresh-sade.jpg"
 local QIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/d/d5/Death_Sentence.png"
 local WIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/4/44/Dark_Passage.png"
 local EIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/7/71/Flay.png"
@@ -74,9 +74,6 @@ function Thresh:LoadMenu()
 	self.Menu:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
 	self.Menu.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	self.Menu.Killsteal:MenuElement({id = "UseE", name = "E", value = true, leftIcon = EIcon})
-
-	self.Menu:MenuElement({id = "Logics", name = "Logics", type = MENU})
-	self.Menu.Logics:MenuElement({id = "logicflashw", name = "Q > Flash Ally W > Q key", key = string.byte("T")})
 		
 	self.Menu:MenuElement({id = "isCC", name = "CC Settings", type = MENU})
 	self.Menu.isCC:MenuElement({id = "Enabled", name = "Enabled", value = true})
@@ -98,8 +95,10 @@ function Thresh:LoadMenu()
     self.Menu.Drawings.E:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     self.Menu.Drawings.E:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
     self.Menu.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(255, 255, 168, 51)})
+	
 	self.Menu.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
-
+    self.Menu.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
+	
 	self.Menu:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
 	self.Menu:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
@@ -191,10 +190,6 @@ function Thresh:Tick()
 	if self.Menu.Combo.comboActive:Value() then
 		self:Combo()
 	end	
-	
-	if self.Menu.Logics.logicflashw:Value() then
-		self:LogicFlashW()
-	end
 	if self.Menu.isCC.Enabled:Value() then
 		self:SpellonCCQ()
 	end
@@ -312,7 +307,7 @@ if self.Menu.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, 450, self.M
 					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
 					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
 					local xPosStart = barPos.x + barXOffset + percentHealthAfterDamage * 100
-					Draw.Line(xPosStart, barPos.y + barYOffset, xPosEnd, barPos.y + barYOffset, 10, Draw.Color(0xFF00FF00))
+					Draw.Line(xPosStart, barPos.y + barYOffset, xPosEnd, barPos.y + barYOffset, 10, self.Menu.Drawings.HPColor:Value())
 				end
 			end
 		end	
