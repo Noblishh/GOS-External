@@ -1,3 +1,5 @@
+local ver = "1.1"
+
 local Heroes = {"Yasuo"}
 
 require "DamageLib"
@@ -7,7 +9,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0","Kypo's","8.1"
+local Version,Author,LVersion = "v1.1","Kypo's","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
