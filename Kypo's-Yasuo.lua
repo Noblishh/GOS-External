@@ -750,3 +750,7 @@ return Count
 end
 
 Callback.Add("Load",function() _G[myHero.charName]() end)
+
+if Update then
+Update("Kypo's-Yasuo",ver,"raw.githubusercontent.com","/Kypos/GOS-External/master/yasuo.version","/Kypos/GOS-External/master/Kypo's-Yasuo.lua", SCRIPT_PATH.."Kypo's-Yasuo.lua")
+end
