@@ -76,9 +76,9 @@ function Veigar:LoadMenu()
 	self.Menu.Lasthit:MenuElement({id = "lasthitActive", name = "Lasthit key", key = string.byte("X")})
 	
 	self.Menu:MenuElement({id = "Clear", name = "Clear", type = MENU})
-	self.Menu.Clear:MenuElement({id = "UseQ", name = "Q", value = true})
+	self.Menu.Clear:MenuElement({id = "UseW", name = "W", value = true})
 	self.Menu.Clear:MenuElement({id = "WHit", name = "W hits x minions", value = 3,min = 1, max = 6, step = 1})
-	self.Menu.Clear:MenuElement({id = "harassActive", name = "Clear key", key = string.byte("C")})
+	self.Menu.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
 	
 	self.Menu:MenuElement({id = "Mana", name = "Mana", type = MENU})
 	self.Menu.Mana:MenuElement({id = "QMana", name = "Min mana to use Q", value = 35, min = 0, max = 100, step = 1})
@@ -213,7 +213,7 @@ function Veigar:Tick()
 	if self.Menu.Harass.harassActive:Value() then
 		self:Harass()
 	end
-	if self.Menu.Clear.harassActive:Value() then
+	if self.Menu.Clear.clearActive:Value() then
 		self:Clear()
 	end
 	if self.Menu.Lasthit.lasthitActive:Value() then
@@ -233,7 +233,7 @@ function Veigar:Tick()
 end
 
 function Veigar:Clear()
-	if self:CanCast(_Q) then
+	if self:CanCast(_Q) and self.Menu.Clear.UseW:Value() then
 	local qMinions = {}
 	local mobs = {}
 	
