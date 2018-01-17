@@ -264,6 +264,8 @@ function Yasuo:GetValidMinion(range)
     	return false
 end
 
+-- All credits to Shulepin from the Windwall.
+
 function Yasuo:Windwall()
 		for i = 1, Game.MissileCount() do
 			local spell = nil

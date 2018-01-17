@@ -46,7 +46,7 @@ local RIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/c/c1/T
 local IgniteIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/f/f4/Ignite.png"
 function Thresh:LoadSpells()
 
-	Q = {Range = 1100, Width = 120, Delay = 0.50, Speed = 1900, Collision = true, aoe = false, Type = "line"}
+	Q = {Range = 1100, Width = 80, Delay = 0.50, Speed = 1900, Collision = true, aoe = false, Type = "line"}
 	W = {Range = 950, Width = 80, Delay = 0.25, Speed = 800, Collision = false, aoe = false, radius = 150}
 	E = {Range = 400, Width = 80, Delay = 0.25, Speed = 2000, Collision = false, aoe = false, Type = "line"}
 	R = {Range = 450, Width = 80, Delay = 0.25, Speed = 1900, Collision = false, aoe = false, Type = "circular"}
@@ -600,7 +600,7 @@ function Thresh:KillstealE()
 	if self.Menu.Killsteal.UseE:Value() and self:CanCast(_E) then
 		if self:EnemyInRange(E.Range) then 
 			local level = myHero:GetSpellData(_E).level	
-			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range,E.Speed, myHero.pos, not E.ignorecol, E.Type )
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range,E.Speed, myHero.pos, E.ignorecol, E.Type )
 		   	local Edamage = Thresh:EDMG()
 			if Edamage >= self:HpPred(target,1) + target.hpRegen * 2 then
 			if (HitChance > 0 ) and target and self:CanCast(_E) then
