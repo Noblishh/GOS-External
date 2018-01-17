@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0.1","Kypos","8.1"
+local Version,Author,LVersion = "v1.0.2","Kypos","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -251,7 +251,7 @@ function Syndra:Clear()
 			end	
 	end	
 		local BestPos, BestHit = GetBestCircularFarmPosition(800, 225 + 40, qMinions)
-		if BestHit >= self.Menu.Clear.QHit:Value() and (myHero.mana/myHero.maxMana >= self.Menu.Mana.QMana:Value() / 100 ) then
+		if BestHit >= self.Menu.Clear.QHit:Value() and self.Menu.Clear.UseQ:Value() and (myHero.mana/myHero.maxMana >= self.Menu.Mana.QMana:Value() / 100 ) then
 			Control.CastSpell(HK_Q,BestPos)
 		end
 	end
