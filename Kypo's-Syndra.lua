@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0","Kypos","8.1"
+local Version,Author,LVersion = "v1.0.1","Kypos","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -56,7 +56,7 @@ function Syndra:LoadSpells()
 	W = {Range = 950, Width = 80, Delay = 0.25, Speed = 1400, Collision = false, aoe = false, Type = "circle", radius = 225}
 	E = {Range = 700, Width = 80, Delay = 0.25, Speed = 1300, Collision = false, aoe = false}
 	R = {Range = 750, Width = 120, Delay = 1.00, Speed = 2000, Collision = false, aoe = false, Type = "line"}
-	QE = {Range = 1250,Delay = 0.6, Radius = 100, Speed = 2000, Type = "line"}
+	QE = {Range = 1200,Delay = 0.6, Radius = 100, Speed = 2000, Type = "line"}
 
 end
 
@@ -70,7 +70,7 @@ function Syndra:LoadMenu()
 		
 	self.Menu:MenuElement({id = "Harass", name = "Harass", type = MENU})
 	self.Menu.Harass:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
-	self.Menu.Harass:MenuElement({id = "AutoQ", name = "Auto Q Toggle", value = true, toggle = true, leftIcon = QIcon, key = string.byte("U")})
+	self.Menu.Harass:MenuElement({id = "AutoQ", name = "Auto Q Toggle", value = true, toggle = true, leftIcon = QIcon, key = string.byte("6")})
 	self.Menu.Harass:MenuElement({id = "UseW", name = "W", value = true, leftIcon = WIcon})
 	self.Menu.Harass:MenuElement({id = "harassActive", name = "Harass key", key = string.byte("V")})	
 	
@@ -539,7 +539,7 @@ function Syndra:QE()
     local target = CurrentTarget(QE.Range)
     if target == nil then return end
     if self.Menu.Combo.UseQE:Value() and target and self:CanCast(_Q) and self:CanCast(_E) then
-			local pos = target:GetPrediction(QE.Speed,0.943)
+			local pos = target:GetPrediction(QE.Speed,0.900)
 			pos = myHero.pos + (pos - myHero.pos):Normalized()*(Q.Range - 65)
 			Control.SetCursorPos(pos) 
 			Control.KeyDown(HK_Q)
