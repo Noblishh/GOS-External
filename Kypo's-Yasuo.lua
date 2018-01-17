@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0.1","Kypo's","8.1"
+local Version,Author,LVersion = "v1.0.2","Kypo's","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -47,7 +47,7 @@ local RIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/c/c6/L
 
 function Yasuo:LoadSpells()
 
-	Q = {Range = 475, Width = 20, Delay = 0.40, Speed = 2000, Collision = false, aoe = false, Type = "line"}
+	Q = {Range = 475, Width = 20, Delay = 0.50, Speed = 2000, Collision = false, aoe = false, Type = "line"}
 	Q3 = {Name = "YasuoQ3W", Range = 900, Width = 90, Delay = 0.50, Speed = 1500, Collision = false, aoe = false, Type = "line"}
 	W = {Range = 400, Width = 90, Delay = 0.25, Speed = 500, Collision = false, aoe = false, Type = "line"}
 	E = {Range = 475, Width = 80, Delay = 0.25, Speed = 2000, Collision = false, aoe = false, Type = "line"}
@@ -134,17 +134,17 @@ function Yasuo:LoadMenu()
 	self.Menu.Drawings:MenuElement({id = "Q", name = "Draw Q range", type = MENU, leftIcon = QIcon})
     self.Menu.Drawings.Q:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     self.Menu.Drawings.Q:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    self.Menu.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(255, 255, 168, 51)})
+    self.Menu.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	--E
 	self.Menu.Drawings:MenuElement({id = "E", name = "Draw E range", type = MENU, leftIcon = EIcon})
     self.Menu.Drawings.E:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     self.Menu.Drawings.E:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    self.Menu.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(255, 255, 168, 51)})
+    self.Menu.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	--R
 	self.Menu.Drawings:MenuElement({id = "R", name = "Draw R range", type = MENU, leftIcon = WIcon})
     self.Menu.Drawings.R:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     self.Menu.Drawings.R:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    self.Menu.Drawings.R:MenuElement({id = "Color", name = "Color", color = Draw.Color(255, 255, 168, 51)})
+    self.Menu.Drawings.R:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	
 	self.Menu.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
     self.Menu.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
@@ -706,7 +706,7 @@ if self.Menu.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, 1200, self.
 			
 			if (TPred) then
 				local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
-				Draw.Circle(castpos, 60, 3, Draw.Color(255, 255, 000, 255))
+				Draw.Circle(castpos, 60, 3, Draw.Color(200, 255, 255, 255))
 			end
 		end
 		if self:CanCast(_W) then
@@ -1035,14 +1035,14 @@ function Yasuo:KillstealQ()
 	end
 	
 function Yasuo:KillstealQ3()
-	local target = CurrentTarget(Q3.Range)
+	local target = CurrentTarget(900)
 	if target == nil then return end
 	if self.Menu.Killsteal.UseQ3:Value() and target and self:CanCast(_Q) then
 		if self:EnemyInRange(Q3.Range) then 
 			local level = myHero:GetSpellData(_Q).level	
-			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, 900, Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
 		   	local Qdamage = Yasuo:QDMG()
-				if Qdamage >= self:HpPred(target,1) + target.hpRegen * 1 and HasBuff(myHero, "YasuoQ3W") then
+			if Qdamage >= self:HpPred(target,1) + target.hpRegen * 1 and HasBuff(myHero, "YasuoQ3W") then
 			if (HitChance > 0 ) and self:CanCast(_Q) then
 			    Control.CastSpell(HK_Q,castpos)
 
