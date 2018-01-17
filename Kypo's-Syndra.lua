@@ -77,7 +77,7 @@ function Syndra:LoadMenu()
 	self.Menu:MenuElement({id = "Clear", name = "Clear", type = MENU})
 	self.Menu.Clear:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	self.Menu.Clear:MenuElement({id = "QHit", name = "E hits x minions", value = 3,min = 1, max = 6, step = 1, leftIcon = EIcon})
-	self.Menu.Clear:MenuElement({id = "harassActive", name = "Clear key", key = string.byte("C")})
+	self.Menu.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
 	
 	self.Menu:MenuElement({id = "Mana", name = "Mana", type = MENU})
 	self.Menu.Mana:MenuElement({id = "QMana", name = "Min mana to use Q", value = 35, min = 0, max = 100, step = 1, leftIcon = WIcon})
@@ -220,7 +220,7 @@ function Syndra:Tick()
 	if self.Menu.Harass.harassActive:Value() then
 		self:Harass()
 	end
-	if self.Menu.Clear.harassActive:Value() then
+	if self.Menu.Clear.clearActive:Value() then
 		self:Clear()
 	end
 	if self.Menu.Combo.comboActive:Value() then
