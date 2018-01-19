@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0.3","Kypo's","8.1"
+local Version,Author,LVersion = "v1.0.4","Kypo's","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -47,11 +47,11 @@ local RIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/c/c6/L
 
 function Yasuo:LoadSpells()
 
-	Q = {Range = 475, Width = 20, Delay = 0.50, Speed = 2000, Collision = false, aoe = false, Type = "line"}
-	Q3 = {Name = "YasuoQ3W", Range = 900, Width = 90, Delay = 0.50, Speed = 1500, Collision = false, aoe = false, Type = "line"}
-	W = {Range = 400, Width = 90, Delay = 0.25, Speed = 500, Collision = false, aoe = false, Type = "line"}
-	E = {Range = 475, Width = 80, Delay = 0.25, Speed = 2000, Collision = false, aoe = false, Type = "line"}
-	R = {Range = 1200, Width = 1, Delay = 0.20, Speed = 10000, Collision = false, aoe = false, Type = "line"}
+	Q = {Range = 475, Width = 50, Delay = 0,30, Speed = 1500, Collision = false, aoe = false, Type = "line"}
+	Q3 = {Name = "YasuoQ3W", Range = 900, Width = 90, Delay = 0.25, Speed = 1500, Collision = false, aoe = false, Type = "line"}
+	W = {Range = 400, Width = 0, Delay = 0.25, Speed = 500, Collision = false, aoe = false, Type = "line"}
+	E = {Range = 475, Width = 80, Delay = 0.25, Speed = 0, Collision = false, aoe = false, Type = "line"}
+	R = {Range = 1200, Width = 0, Delay = 0.20, Speed = 20, Collision = false, aoe = false, Type = "line"}
 
 end
 
@@ -231,7 +231,7 @@ function Yasuo:Tick()
 	end
 	if self.Menu.Clear.clearActive:Value() and self:CanCast(_Q) then
 		self:Clear()
-		self:ClearQ3Count()
+		self:ClearQ3()
 	end
 	if self.Menu.Lasthit.lasthitActive:Value() then
 		self:Lasthit()
@@ -939,18 +939,29 @@ function Yasuo:Clear()
 	if minion and minion.team == 300 or minion.team ~= myHero.team then
 		if self:CanCast(_Q) then 
 			if self.Menu.Clear.UseQ:Value() and minion then
-				if Yasuo:ValidTarget(minion, 475) and myHero.pos:DistanceTo(minion.pos) < 475 then
+				if Yasuo:ValidTarget(minion, 475) and myHero.pos:DistanceTo(minion.pos) < 475 and not HasBuff(myHero, "YasuoQ3W") then
 					Control.CastSpell(HK_Q, minion)
-				else if myHero.pos:DistanceTo(minion.pos) < 900 and HasBuff(myHero, "YasuoQ3W") then
-					Control.CastSpell(HK_Q,	minion)
 					end
 				end
 			end
 		end
 	end
 end
-end
 
+function Yasuo:ClearQ3()
+	for i = 1, Game.MinionCount() do
+	local minion = Game.Minion(i)
+	if minion and minion.team == 300 or minion.team ~= myHero.team then
+		if self:CanCast(_Q) then 
+			if self.Menu.Clear.UseQ:Value() and minion then
+				if Yasuo:ValidTarget(minion, 900) and myHero.pos:DistanceTo(minion.pos) < 900 and HasBuff(myHero, "YasuoQ3W") and minion:GetCollision(90, 1600, 0.10) - 1 >= self.Menu.Clear.Q3Clear:Value() then
+					Control.CastSpell(HK_Q, minion)
+					end
+				end
+			end
+		end
+	end
+end
 -----------------------------
 -- LASTHIT
 -----------------------------
@@ -1119,49 +1130,6 @@ function VectorPointProjectionOnLineSegment(v1, v2, v)
     local isOnSegment = rS == rL
     local pointSegment = isOnSegment and pointLine or { x = ax + rS * (bx - ax), y = ay + rS * (by - ay) }
     return pointSegment, pointLine, isOnSegment
-end
-
-
-function Yasuo:ClearQ3Count(range)
-		for i = 1, Game.MinionCount()do
-		local minion = Game.Minion(i)
-		if minion.isEnemy and minion.alive and minion.isTargetable and GetDistanceSqr(myHero.pos, minion.pos) <= 900 then
-		if Yasuo:linhaq3(900, 80) >= self.Menu.Clear.Q3Clear:Value()then
-      return minion
-    end
-  end
-end
-return false
-end
-
-function Yasuo:linhaq3(range, width)
-	local pos, hit = nil, 0
-	for i = 1, Game.MinionCount() do
-		local minion = Game.Minion(i)
-		if minion and not minion.dead and minion.isEnemy then
-			local EP = myHero.pos:Extended(minion.pos, range)
-			local C = Yasuo:linhabichos(myHero.pos, EP, width)
-			if C > hit then
-				hit = C
-				pos = minion.pos
-			end
-		end
-	end
-	return pos, hit
-end
-
-function Yasuo:linhabichos(sp, ep, width)
-        local c = 0
-        for i = 1, Game.MinionCount() do
-        	local minion = Game.Minion(i)
-        	if minion and not minion.dead and minion.isEnemy then
-        		local pointSegment, pointLine, isOnSegment = VectorPointProjectionOnLineSegment(sp, ep, minion.pos)
-        		if isOnSegment and Yasuo:GetDistanceSqr(pointSegment, minion.pos) < (width + minion.boundingRadius)^2 and Yasuo:GetDistanceSqr(sp, ep) > Yasuo:GetDistanceSqr(sp, minion.pos) then
-				c = c + 1
-			end
-        	end
-        end
-        return c
 end
 
 Callback.Add("Load",function() _G[myHero.charName]() end)
