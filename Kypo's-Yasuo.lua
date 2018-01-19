@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0.2","Kypo's","8.1"
+local Version,Author,LVersion = "v1.0.3","Kypo's","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -229,8 +229,9 @@ function Yasuo:Tick()
 	if self.Menu.Combo.comboActive:Value() then
 		self:Combo()
 	end
-	if self.Menu.Clear.clearActive:Value() then
+	if self.Menu.Clear.clearActive:Value() and self:CanCast(_Q) then
 		self:Clear()
+		self:ClearQ3Count()
 	end
 	if self.Menu.Lasthit.lasthitActive:Value() then
 		self:Lasthit()
@@ -241,7 +242,6 @@ function Yasuo:Tick()
 		self:SpellonCCQ3()
 		self:AutoRX()
 		self:RksKnockedUp()
-		self:ClearQ3Count()
 end
 
 function Yasuo:HasBuff(unit, buffname)
@@ -1123,7 +1123,6 @@ end
 
 
 function Yasuo:ClearQ3Count(range)
-		self:CanCast(_Q)
 		for i = 1, Game.MinionCount()do
 		local minion = Game.Minion(i)
 		if minion.isEnemy and minion.alive and minion.isTargetable and GetDistanceSqr(myHero.pos, minion.pos) <= 900 then
