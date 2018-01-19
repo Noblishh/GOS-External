@@ -50,10 +50,10 @@ local HeroIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/c/c
 
 function Zed:LoadSpells()
 
-	Q = {Range = 900, Width = 20, Delay = 0.15, Speed = 900, Collision = false, aoe = false, Type = "line"}
-	W = {Range = 720, Width = 90, Delay = 0.25, Speed = 1750, Collision = false, aoe = false, Type = "line"}
-	E = {Range = 290, Width = 100, Delay = 0.25, Speed = 2000, Collision = false, aoe = false, Type = "circular"}
-	R = {Range = 625, Width = 1, Delay = 0.20, Speed = 10000, Collision = false, aoe = false, Type = "line"}
+	Q = {Range = 900, Width = 45, Delay = 0.15, Speed = 902, Collision = false, aoe = false, Type = "line"}
+	W = {Range = 700, Width = 90, Delay = 0.10, Speed = 1750, Collision = false, aoe = false, Type = "line"}
+	E = {Range = 290, Width = 100, Delay = 0.05, Speed = 0, Collision = false, aoe = false, Type = "circular"}
+	R = {Range = 625, Width = 1, Delay = 0, Speed = 0, Collision = false, aoe = false, Type = "line"}
 
 end
 
@@ -192,7 +192,6 @@ function Zed:Tick()
 		self:RCombo()
 	end
 	if self.Menu.Clear.clearActive:Value() then
-		self:Clear()
 		self:ClearQCount()
 	end
 	if self.Menu.Lasthit.lasthitActive:Value() then
@@ -705,58 +704,18 @@ function Zed:KillstealQ()
 		end
 	end
 
-function VectorPointProjectionOnLineSegment(v1, v2, v)
-    local cx, cy, ax, ay, bx, by = v.x, (v.z or v.y), v1.x, (v1.z or v1.y), v2.x, (v2.z or v2.y)
-    local rL = ((cx - ax) * (bx - ax) + (cy - ay) * (by - ay)) / ((bx - ax) ^ 2 + (by - ay) ^ 2)
-    local pointLine = { x = ax + rL * (bx - ax), y = ay + rL * (by - ay) }
-    local rS = rL < 0 and 0 or (rL > 1 and 1 or rL)
-    local isOnSegment = rS == rL
-    local pointSegment = isOnSegment and pointLine or { x = ax + rS * (bx - ax), y = ay + rS * (by - ay) }
-    return pointSegment, pointLine, isOnSegment
-end
-
 
 function Zed:ClearQCount(range)
-		self:CanCast(_Q)
-		for i = 1, Game.MinionCount()do
-		local minion = Game.Minion(i)
-		if minion.isEnemy and minion.alive and minion.isTargetable and not minion.dead and GetDistanceSqr(myHero.pos, minion.pos) <= 900 then
-		if Zed:linhaq(900, 65) > self.Menu.Clear.QClear:Value()then
-      return minion
+	for i = 1, Game.MinionCount() do
+	local minion = Game.Minion(i)
+	if minion and minion.team == 300 or minion.team ~= myHero.team then
+		if self:CanCast(_Q) then 
+			if self.Menu.Clear.UseQ:Value() and minion and minion:GetCollision(45, 902, 0.15) - 1 >= self.Menu.Clear.QClear:Value() then
+					Control.CastSpell(HK_Q, minion)
     end
   end
 end
-return false
 end
-
-function Zed:linhaq(range, width)
-	local pos, hit = nil, 0
-	for i = 1, Game.MinionCount() do
-		local minion = Game.Minion(i)
-		if minion and not minion.dead and minion.isEnemy then
-			local EP = myHero.pos:Extended(minion.pos, range)
-			local C = Zed:linhabichos(myHero.pos, EP, width)
-			if C > hit then
-				hit = C
-				pos = minion.pos
-			end
-		end
-	end
-	return pos, hit
-end
-
-function Zed:linhabichos(sp, ep, width)
-        local c = 0
-        for i = 1, Game.MinionCount() do
-        	local minion = Game.Minion(i)
-        	if minion and not minion.dead and minion.isEnemy then
-        		local pointSegment, pointLine, isOnSegment = VectorPointProjectionOnLineSegment(sp, ep, minion.pos)
-        		if isOnSegment and Zed:GetDistanceSqr(pointSegment, minion.pos) < (width + minion.boundingRadius)^2 and Zed:GetDistanceSqr(sp, ep) > Zed:GetDistanceSqr(sp, minion.pos) then
-				c = c + 1
-			end
-        	end
-        end
-        return c
 end
 
 function Zed:Items()

@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0.2","Kypos","8.1"
+local Version,Author,LVersion = "v1.0.3","Kypos","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -52,16 +52,16 @@ local Balls = {}
 
 function Syndra:LoadSpells()
 
-	Q = {Range = 800, Width = 80, Delay = 0.25, Speed = 1200, Collision = false, aoe = false, Type = "circle", radius = 225}
-	W = {Range = 950, Width = 80, Delay = 0.25, Speed = 1400, Collision = false, aoe = false, Type = "circle", radius = 225}
-	E = {Range = 700, Width = 80, Delay = 0.25, Speed = 1300, Collision = false, aoe = false}
-	R = {Range = 750, Width = 120, Delay = 1.00, Speed = 2000, Collision = false, aoe = false, Type = "line"}
-	QE = {Range = 1200,Delay = 0.6, Radius = 100, Speed = 2000, Type = "line"}
+	Q = {Range = 800, Width = 80, Delay = 0.50, Speed = 1750, Collision = false, aoe = false, Type = "circular", radius = 225}
+	W = {Range = 950, Width = 80, Delay = 0.70, Speed = 1450, Collision = false, aoe = false, Type = "circular", radius = 225}
+	E = {Range = 700, Width = 80, Delay = 0.25, Speed = 902, Collision = false, aoe = false}
+	R = {Range = 750, Width = 0, Delay = 1.00, Speed = 0, Collision = false, aoe = false, Type = "line"}
+	QE = {Range = 1100, Delay = 0.6, Speed = 1750, Type = "line"}
 
 end
 
 function Syndra:LoadMenu()
-	self.Menu = MenuElement({type = MENU, id = "Syndra", name = "Ultimate  | Syndra", leftIcon = HeroIcon})
+	self.Menu = MenuElement({type = MENU, id = "Syndra", name = "Kypo's Syndra", leftIcon = HeroIcon})
 	self.Menu:MenuElement({id = "Combo", name = "Combo", type = MENU})
 	self.Menu.Combo:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	self.Menu.Combo:MenuElement({id = "UseW", name = "W", value = true, leftIcon = WIcon})
@@ -86,6 +86,7 @@ function Syndra:LoadMenu()
 	self.Menu:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
 	self.Menu.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	self.Menu.Killsteal:MenuElement({id = "UseW", name = "W", value = true, leftIcon = WIcon})
+	self.Menu.Killsteal:MenuElement({id = "UseIG", name = "Use Ignite", value = true})
 	self.Menu.Killsteal:MenuElement({id = "RR", name = "R KS on: ", value = true, type = MENU, leftIcon = RIcon})
 	for i, hero in pairs(self:GetEnemyHeroes()) do
 	self.Menu.Killsteal.RR:MenuElement({id = "UseR"..hero.charName, name = "Use R on: "..hero.charName, value = true, leftIcon = RIcon})
@@ -229,11 +230,40 @@ function Syndra:Tick()
 	if self.Menu.gapclose.enabled:Value() then
 		self:Antigap()
 	end
+	if self.Menu.Killsteal.UseIG:Value() then
+		self:UseIG()
+	end
 		self:KillstealQ()
 		self:KillstealR()
 		self:SpellonCCQ()
 		self:QE()
 		self:AutoQ()
+end
+
+function Syndra:UseIG()
+    local target = CurrentTarget(600)
+	if self.Menu.Killsteal.UseIG:Value() and target then 
+		local IGdamage = 70 + 20 * myHero.levelData.lvl
+   		if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" then
+       		if IsValidTarget(target, 600, true, myHero) and self:CanCast(SUMMONER_1) then
+				if IGdamage >= Syndra:HpPred(target, 1) + target.hpRegen * 1 then
+					Control.CastSpell(HK_SUMMONER_1, target)
+				end
+       		end
+		elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" then
+        	if IsValidTarget(target, 600, true, myHero) and self:CanCast(SUMMONER_2) then
+				if IGdamage >= Syndra:HpPred(target, 1) + target.hpRegen * 1 then
+					Control.CastSpell(HK_SUMMONER_2, target)
+				end
+       		end
+		end
+	end
+end
+
+function IsValidTarget(unit, range, onScreen)
+    local range = range or 2000
+    
+    return unit and unit.distance <= range and not unit.dead and unit.valid and unit.visible and unit.isTargetable and not (onScreen and not unit.pos2D.onScreen)
 end
 
 function Syndra:Clear()
@@ -302,7 +332,7 @@ end
 function Syndra:GetValidMinion(range)
     	for i = 1,Game.MinionCount() do
         local minion = Game.Minion(i)
-        if  minion.team ~= myHero.team and minion.valid and minion.pos:DistanceTo(myHero.pos) < 1150 then
+        if  minion.team ~= myHero.team and minion.valid and minion.pos:DistanceTo(myHero.pos) < 800 then
         return true
         end
     	end
@@ -409,7 +439,7 @@ if self.Menu.Harass.AutoQ:Value() == true then
 if self.Menu.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, 800 , self.Menu.Drawings.Q.Width:Value(), self.Menu.Drawings.Q.Color:Value()) end
 if self.Menu.Drawings.W.Enabled:Value() then Draw.Circle(myHero.pos, 925, self.Menu.Drawings.W.Width:Value(), self.Menu.Drawings.W.Color:Value()) end
 if self.Menu.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, 700, self.Menu.Drawings.E.Width:Value(), self.Menu.Drawings.E.Color:Value()) end
-if self.Menu.Drawings.QE.Enabled:Value() then Draw.Circle(myHero.pos, 1250, self.Menu.Drawings.QE.Width:Value(), self.Menu.Drawings.QE.Color:Value()) end
+if self.Menu.Drawings.QE.Enabled:Value() then Draw.Circle(myHero.pos, 1100, self.Menu.Drawings.QE.Width:Value(), self.Menu.Drawings.QE.Color:Value()) end
 
 			if self.Menu.Drawings.DrawDamage:Value() then
 		for i, hero in pairs(self:GetEnemyHeroes()) do
@@ -547,7 +577,7 @@ function Syndra:QE()
 			Control.KeyDown(HK_E) 
 			Control.KeyUp(HK_E) 
 			end
-		end
+end
 
 function Syndra:Combo()
     local target = CurrentTarget(Q.Range)
@@ -682,7 +712,7 @@ function Syndra:KillstealQ()
 	if self.Menu.Killsteal.UseQ:Value() and target and self:CanCast(_Q) then
 		if self:EnemyInRange(800) then 
 			local level = myHero:GetSpellData(_Q).level	
-			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, 800,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, 800, Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
 			local castposR,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range,R.Speed, myHero.pos, R.ignorecol, R.Type )
 		   	local Qdamage = Syndra:QDMG()
 			if Qdamage >= self:HpPred(target,1) + target.hpRegen * 1 then

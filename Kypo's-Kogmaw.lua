@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0","Kypo's","8.1"
+local Version,Author,LVersion = "v1.0.1","Kypo's","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -42,9 +42,9 @@ local HeroIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/4/4
 
 function KogMaw:LoadSpells()
 
-	Q = {Range = 1175, Width = myHero:GetSpellData(_Q).width, Delay = 0.40, Speed = 2000, Collision = true, aoe = false, Type = "line"}
+	Q = {Range = 1175, Width = 70, Delay = 0.70, Speed = 1650, collision = true, aoe = false, Type = "line"}
 	W = {Width = 1, Delay = 0.25, Speed = 500, Collision = false, aoe = false, Type = "line"}
-	E = {Range = 1280, Width = 120, Delay = 0.25, Speed = 1350, Collision = false, aoe = false, Type = "line"}
+	E = {Range = 1280, Width = 120, Delay = 0.25, Speed = 1200, Collision = false, aoe = false, Type = "line"}
 	R = {Width = 50, Delay = 0.55, Speed = 1000, Collision = false, aoe = true, Type = "circular", radius = 100}
 
 end
@@ -213,6 +213,7 @@ function KogMaw:Tick()
 	end
 	if self.Menu.Clear.clearActive:Value() then
 		self:Clear()
+		self:ClearECount()
 	end
 	if self.Menu.Lasthit.lasthitActive:Value() then
 		self:Lasthit()
@@ -221,7 +222,6 @@ function KogMaw:Tick()
 		self:RKSNormal()
 		self:SpellonCCQ()
 		self:RCC()
-		self:ClearECount()
 		self:RKSCC()
 end
 
@@ -620,21 +620,6 @@ end
 -----------------------------
 
 function KogMaw:Clear()
-	for i = 1, Game.MinionCount() do
-	local minion = Game.Minion(i)
-	if minion and minion.team == 300 or minion.team ~= myHero.team then
-		if self:CanCast(_E) then 
-			if self.Menu.Clear.UseE:Value() and minion then
-				if KogMaw:ValidTarget(minion, E.Range) and myHero.pos:DistanceTo(minion.pos) < E.Range then
-				if myHero.pos:DistanceTo(minion.pos) < E.Range then
-					Control.CastSpell(HK_E,	minion)
-					end
-				end
-			end
-		end
-	end
-end
-
 	if self:CanCast(_R) then
 	local rMinions = {}
 	local mobs = {}
@@ -934,60 +919,17 @@ end
 end
 end
 
-
-function VectorPointProjectionOnLineSegment(v1, v2, v)
-    local cx, cy, ax, ay, bx, by = v.x, (v.z or v.y), v1.x, (v1.z or v1.y), v2.x, (v2.z or v2.y)
-    local rL = ((cx - ax) * (bx - ax) + (cy - ay) * (by - ay)) / ((bx - ax) ^ 2 + (by - ay) ^ 2)
-    local pointLine = { x = ax + rL * (bx - ax), y = ay + rL * (by - ay) }
-    local rS = rL < 0 and 0 or (rL > 1 and 1 or rL)
-    local isOnSegment = rS == rL
-    local pointSegment = isOnSegment and pointLine or { x = ax + rS * (bx - ax), y = ay + rS * (by - ay) }
-    return pointSegment, pointLine, isOnSegment
-end
-
-
 function KogMaw:ClearECount(range)
-		if self:CanCast(_E) then
-		for i = 1, Game.MinionCount()do
-		local minion = Game.Minion(i)
-		if minion.isEnemy and minion.alive and minion.isTargetable and GetDistanceSqr(myHero.pos, minion.pos) <= 1280 then
-		if KogMaw:linhaq3(1280, 120) >= self.Menu.Clear.EClear:Value()then
-      return minion
+	for i = 1, Game.MinionCount() do
+	local minion = Game.Minion(i)
+	if minion and minion.team == 300 or minion.team ~= myHero.team then
+		if self:CanCast(_E) then 
+			if self.Menu.Clear.UseE:Value() and minion and minion:GetCollision(120, 1200, 0.25) - 1 >= self.Menu.Clear.EClear:Value() then
+					Control.CastSpell(HK_E, minion)
     end
   end
 end
-return false
 end
-end
-
-function KogMaw:linhaq3(range, width)
-	local pos, hit = nil, 0
-	for i = 1, Game.MinionCount() do
-		local minion = Game.Minion(i)
-		if minion and not minion.dead and minion.isEnemy then
-			local EP = myHero.pos:Extended(minion.pos, range)
-			local C = KogMaw:linhabichos(myHero.pos, EP, width)
-			if C > hit then
-				hit = C
-				pos = minion.pos
-			end
-		end
-	end
-	return pos, hit
-end
-
-function KogMaw:linhabichos(sp, ep, width)
-        local c = 0
-        for i = 1, Game.MinionCount() do
-        	local minion = Game.Minion(i)
-        	if minion and not minion.dead and minion.isEnemy then
-        		local pointSegment, pointLine, isOnSegment = VectorPointProjectionOnLineSegment(sp, ep, minion.pos)
-        		if isOnSegment and KogMaw:GetDistanceSqr(pointSegment, minion.pos) < (width + minion.boundingRadius)^2 and KogMaw:GetDistanceSqr(sp, ep) > KogMaw:GetDistanceSqr(sp, minion.pos) then
-				c = c + 1
-			end
-        	end
-        end
-        return c
 end
 
 Callback.Add("Load",function() _G[myHero.charName]() end)

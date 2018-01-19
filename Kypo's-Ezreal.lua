@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0","Kypos","8.1"
+local Version,Author,LVersion = "v1.0.1","Kypos","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -50,10 +50,10 @@ local RIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/0/02/T
 
 function Ezreal:LoadSpells()
 
-	Q = {Range = 1150, Width = 80, Delay = 0.25, Speed = 2000, Collision = true, aoe = false, Type = "line"}
-	W = {Range = 1000, Width = 80, Delay = 0.25, Speed = 1550, Collision = false, aoe = false, Type = "line"}
-	E = {Range = 450, Delay = 0.25}
-	R = {Range = 20000, Width = 160, Delay = 1.00, Speed = 2000, Collision = false, aoe = false, Type = "line"}
+	Q = {Range = 1150, Width = 80, Delay = 0.25, Speed = 1200, Collision = true, aoe = false, Type = "line"}
+	W = {Range = 1000, Width = 80, Delay = 0.25, Speed = 1200, Collision = false, aoe = false, Type = "line"}
+	E = {Range = 475, Delay = 0.25}
+	R = {Range = 2000, Width = 160, Delay = 1.35, Speed = 2000, Collision = false, aoe = false, Type = "line"}
 
 end
 
@@ -105,17 +105,17 @@ function Ezreal:LoadMenu()
 	self.Menu.Drawings:MenuElement({id = "Q", name = "Draw Q range", type = MENU, leftIcon = QIcon})
     self.Menu.Drawings.Q:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     self.Menu.Drawings.Q:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    self.Menu.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(255, 255, 168, 51)})
+    self.Menu.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	--W
 	self.Menu.Drawings:MenuElement({id = "W", name = "Draw W range", type = MENU, leftIcon = WIcon})
     self.Menu.Drawings.W:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     self.Menu.Drawings.W:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    self.Menu.Drawings.W:MenuElement({id = "Color", name = "Color", color = Draw.Color(255, 255, 168, 51)})
+    self.Menu.Drawings.W:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	--E
 	self.Menu.Drawings:MenuElement({id = "E", name = "Draw E range", type = MENU, leftIcon = EIcon})
     self.Menu.Drawings.E:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     self.Menu.Drawings.E:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    self.Menu.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(255, 255, 168, 51)})
+    self.Menu.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	
 	self.Menu.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
     self.Menu.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
@@ -320,7 +320,7 @@ if self.Menu.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, 475, self.M
 			
 			if (TPred) then
 				local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
-				Draw.Circle(castpos, 60, 3, Draw.Color(255, 255, 000, 255))
+				Draw.Circle(castpos, 60, 3, Draw.Color(200, 255, 255, 255))
 			end
 		end
 		if self:CanCast(_W) then
@@ -434,7 +434,7 @@ function Ezreal:Harass()
 	    if self:EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
-			    self:CastSpell(HK_Q,castpos)
+			    Control.CastSpell(HK_Q,castpos)
 		    end
 	    end
     end
@@ -443,7 +443,7 @@ function Ezreal:Harass()
 		if self:EnemyInRange(W.Range) then 
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, W.ignorecol, W.Type )
 		    if (HitChance > 0 ) and self:CanCast(_W) then
-			    self:CastSpell(HK_W,castpos)
+			    Control.CastSpell(HK_W,castpos)
             end
 		end
 	end
@@ -481,7 +481,7 @@ function Ezreal:Lasthit()
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(minion, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 			if myHero.pos:DistanceTo(minion.pos) < 1150 and self.Menu.Lasthit.UseQ:Value() and minion.isEnemy and not minion.dead then
 				if Qdamage >= self:HpPred(minion,1) and (HitChance > 0 ) then
-				self:CastSpell(HK_Q,castpos)
+			    Control.CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -528,7 +528,7 @@ function Ezreal:KillstealQ()
 		   	local Qdamage = Ezreal:QDMG()
 			if Qdamage >= self:HpPred(target,1) + target.hpRegen * 1 then
 			if (HitChance > 0 ) and self:CanCast(_Q) then
-			    self:CastSpell(HK_Q,castpos)
+			    Control.CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -549,7 +549,7 @@ function Ezreal:KillstealW()
 		   	local Wdamage = Ezreal:WDMG()
 			if Wdamage >= self:HpPred(target,1) + target.hpRegen * 1 then
 			if (HitChance > 0 ) and self:CanCast(_W) and target  then
-			    self:CastSpell(HK_W,castpos)
+			    Control.CastSpell(HK_W,castpos)
 				end
 			end
 		end
@@ -570,7 +570,7 @@ function Ezreal:KillstealR()
 		   	local Rdamage = Ezreal:RDMG()
 			if Rdamage >= self:HpPred(target,1) + target.hpRegen * 2 then
 			if (HitChance > 0 ) and target and self:CanCast(_R) then
-			    self:CastSpell(HK_R,castpos)
+			    Control.CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -591,7 +591,7 @@ function Ezreal:SpellonCCW()
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, W.ignorecol, W.Type )
 			if ImmobileEnemy then
 			if (HitChance > 0 ) then
-			    self:CastSpell(HK_W,castpos)
+			    Control.CastSpell(HK_W,castpos)
 				end
 			end
 		end
@@ -612,7 +612,7 @@ function Ezreal:SpellonCCQ()
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 			if ImmobileEnemy then
 			if (HitChance > 0 ) then
-			    self:CastSpell(HK_Q,castpos)
+			    Control.CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -624,10 +624,10 @@ end
 -----------------------------
 
 function Ezreal:RksCC()
-    local target = CurrentTarget(2000)
+    local target = CurrentTarget(1500)
 	if target == nil then return end
 	if self.Menu.Killsteal.RCConly["UseR"..target.charName]:Value() and target and self:CanCast(_R) then
-		if self:EnemyInRange(2000) then 
+		if self:EnemyInRange(1500) then 
 			local ImmobileEnemy = self:IsImmobileTarget(target)
 			local level = myHero:GetSpellData(_R).level	
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range,R.Speed, myHero.pos, R.ignorecol, R.Type )
@@ -635,7 +635,7 @@ function Ezreal:RksCC()
 			if Rdamage >= self:HpPred(target,1) + target.hpRegen * 1 then
 			if ImmobileEnemy then
 			if (HitChance > 0 ) then
-			    self:CastSpell(HK_R,castpos)
+			    Control.CastSpell(HK_R,castpos)
 				end
 			end
 		end

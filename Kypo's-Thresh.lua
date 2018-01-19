@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0","Kypos","8.1"
+local Version,Author,LVersion = "v1.0.1","Kypos","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -44,9 +44,10 @@ local WIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/4/44/D
 local EIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/7/71/Flay.png"
 local RIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/c/c1/The_Box.png"
 local IgniteIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/f/f4/Ignite.png"
+
 function Thresh:LoadSpells()
 
-	Q = {Range = 1100, Width = 80, Delay = 0.50, Speed = 1900, Collision = true, aoe = false, Type = "line"}
+	Q = {Range = 1075, Width = 60, Delay = 0.50, Speed = 1200, Collision = true, aoe = false, Type = "line"}
 	W = {Range = 950, Width = 80, Delay = 0.25, Speed = 800, Collision = false, aoe = false, radius = 150}
 	E = {Range = 400, Width = 80, Delay = 0.25, Speed = 2000, Collision = false, aoe = false, Type = "line"}
 	R = {Range = 450, Width = 80, Delay = 0.25, Speed = 1900, Collision = false, aoe = false, Type = "circular"}
@@ -58,7 +59,7 @@ function Thresh:LoadMenu()
 	self.Menu:MenuElement({id = "Combo", name = "Combo", type = MENU})
 	self.Menu.Combo:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	self.Menu.Combo:MenuElement({id = "DelayQ", name = "Delay Q1 and Q2 (ms)", value = 0.8,min = 0.1,max = 0.8,step = 0.01})
-	self.Menu.Combo:MenuElement({id = "MinQ", name = "Min Distance to Q", value = 1050,min = 200,max = 1100,step = 1})	
+	self.Menu.Combo:MenuElement({id = "MinQ", name = "Min Distance to Q", value = 1050,min = 200,max = 1075,step = 1})	
 	self.Menu.Combo:MenuElement({id = "PullKey", name = "Pull Key",key = string.byte("5") })
 	self.Menu.Combo:MenuElement({id = "PushKey", name = "Push Key",key = string.byte("6") })	
 	self.Menu.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
@@ -74,7 +75,8 @@ function Thresh:LoadMenu()
 	self.Menu:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
 	self.Menu.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	self.Menu.Killsteal:MenuElement({id = "UseE", name = "E", value = true, leftIcon = EIcon})
-		
+	self.Menu.Killsteal:MenuElement({id = "UseIG", name = "Use Ignite", value = true, leftIcon = IgniteIcon})
+	
 	self.Menu:MenuElement({id = "isCC", name = "CC Settings", type = MENU})
 	self.Menu.isCC:MenuElement({id = "Enabled", name = "Enabled", value = true})
 	self.Menu.isCC:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
@@ -196,6 +198,9 @@ function Thresh:Tick()
 	if self.Menu.AutoW.Wmyself:Value() then
 		self:Autoshield()
 	end
+	if self.Menu.Killsteal.UseIG:Value() then
+		self:UseIG()
+	end
 		self:KillstealQ()
 		self:KillstealE()
 		self:AutoW()
@@ -283,12 +288,32 @@ function Thresh:EnemyInRange(range)
 	return count
 end
 
+function Thresh:UseIG()
+    local target = CurrentTarget(600)
+	if self.Menu.Killsteal.UseIG:Value() and target then 
+		local IGdamage = 70 + 20 * myHero.levelData.lvl
+   		if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" then
+       		if IsValidTarget(target, 600, true, myHero) and self:CanCast(SUMMONER_1) then
+				if IGdamage >= Thresh:HpPred(target, 1) + target.hpRegen * 1 then
+					Control.CastSpell(HK_SUMMONER_1, target)
+				end
+       		end
+		elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" then
+        	if IsValidTarget(target, 600, true, myHero) and self:CanCast(SUMMONER_2) then
+				if IGdamage >= Thresh:HpPred(target, 1) + target.hpRegen * 1 then
+					Control.CastSpell(HK_SUMMONER_2, target)
+				end
+       		end
+		end
+	end
+end
+
 -----------------------------
 -- DRAWINGS
 -----------------------------
 
 function Thresh:Draw()
-if self.Menu.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, 1100, self.Menu.Drawings.Q.Width:Value(), self.Menu.Drawings.Q.Color:Value()) end
+if self.Menu.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, 1075, self.Menu.Drawings.Q.Width:Value(), self.Menu.Drawings.Q.Color:Value()) end
 if self.Menu.Drawings.W.Enabled:Value() then Draw.Circle(myHero.pos, 950, self.Menu.Drawings.W.Width:Value(), self.Menu.Drawings.W.Color:Value()) end
 if self.Menu.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, 450, self.Menu.Drawings.E.Width:Value(), self.Menu.Drawings.E.Color:Value()) end
 			if self.Menu.Drawings.DrawDamage:Value() then
@@ -540,7 +565,7 @@ function Thresh:Combo()
     if target == nil then return end
     if self.Menu.Combo.UseQ:Value() and target and self:CanCast(_Q) then
 	    if self:EnemyInRange(Q.Range) then
-		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, 0.50 , 100, 1100,1900, myHero.pos, not Q.ignorecol, Q.Type )
+		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, 0.50 , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) and target.distance <= self.Menu.Combo.MinQ:Value() and Game.Timer() - myHero:GetSpellData(_Q).castTime >= self.Menu.Combo.DelayQ:Value() then
 			    Control.CastSpell(HK_Q,castpos)
 		    end
@@ -579,7 +604,7 @@ function Thresh:KillstealQ()
 	if self.Menu.Killsteal.UseQ:Value() and target and self:CanCast(_Q) then
 		if self:EnemyInRange(Q.Range) then 
 			local level = myHero:GetSpellData(_Q).level	
-		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, 0.50 , 100, 1100,1900, myHero.pos, not Q.ignorecol, Q.Type )
+		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, 0.50 , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		   	local Qdamage = Thresh:QDMG()
 			if Qdamage >= self:HpPred(target,1) + target.hpRegen * 1 then
 			if (HitChance > 0 ) and self:CanCast(_Q) then
@@ -622,7 +647,7 @@ function Thresh:SpellonCCQ()
 		if self:EnemyInRange(Q.Range) then 
 			local ImmobileEnemy = self:IsImmobileTarget(target)
 			local level = myHero:GetSpellData(_Q).level	
-		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, 0.50 , 100, 1100,1900, myHero.pos, not Q.ignorecol, Q.Type )
+		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, 0.50 , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 			if ImmobileEnemy then
 			if (HitChance > 0 ) and target.distance <= self.Menu.Combo.MinQ:Value() and Game.Timer() - myHero:GetSpellData(_Q).castTime >= self.Menu.Combo.DelayQ:Value() and not isQ2() then
 			    Control.CastSpell(HK_Q,castpos)

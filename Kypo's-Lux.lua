@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0","Kypos","8.1"
+local Version,Author,LVersion = "v1.0.1","Kypos","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -46,10 +46,10 @@ local RIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/0/06/F
 
 function Lux:LoadSpells()
 
-	Q = {Range = 1150, Width = 80, Delay = 0.25, Speed = 1200, Collision = true, aoe = false, Type = "line"}
-	W = {Range = 1075, Width = 80, Delay = 0.25, Speed = 1400, Collision = false, aoe = false, Type = "line"}
-	E = {Range = 1000, Width = 80, Delay = 0.25, Speed = 1300, Collision = false, aoe = true, Type = "circular", radius = 350}
-	R = {Range = 3340, Width = 120, Delay = 1.00, Speed = 2000, Collision = false, aoe = false, Type = "line"}
+	Q = {Range = 1150, Width = 80, Delay = 0.50, Speed = 1200, Collision = true, aoe = false, Type = "line"}
+	W = {Range = 1075, Width = 150, Delay = 0.25, Speed = 1200, Collision = false, aoe = false, Type = "line"}
+	E = {Range = 1000, Width = 0, Delay = 0.50, Speed = 1300, Collision = false, aoe = true, Type = "circular", radius = 350}
+	R = {Range = 3340, Width = 190, Delay = 1.30, Speed = 3000, Collision = false, aoe = false, Type = "line"}
 
 end
 

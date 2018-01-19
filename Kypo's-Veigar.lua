@@ -47,8 +47,8 @@ local HeroIcon = "http://static.lolskill.net/img/champions/64/veigar.png"
 
 function Veigar:LoadSpells()
 
-	Q = {Range = 900, Width = 70, Delay = 0.25, Speed = 2000, Collision = true, aoe = false, Type = "line"}
-	W = {Range = 900, Width = 0, Delay = 1.25, Speed = 1400, Collision = false, aoe = true, Type = "circle", radius = 112}
+	Q = {Range = 900, Width = 70, Delay = 0.40, Speed = 1200, Collision = true, aoe = false, Type = "line"}
+	W = {Range = 900, Width = 0, Delay = 1.30, Speed = 1000, Collision = false, aoe = true, Type = "circle", radius = 112}
 	E = {Range = 700, Width = 0, Delay = 0.50, Speed = 1300, Collision = false, aoe = false, Type = "circle"}
 	R = {Range = 650, Width = 0, Delay = 1.00, Speed = 2000, Collision = false, aoe = false, Type = "line"}
 
@@ -87,6 +87,7 @@ function Veigar:LoadMenu()
 	self.Menu:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
 	self.Menu.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true})
 	self.Menu.Killsteal:MenuElement({id = "UseW", name = "W", value = false})
+	self.Menu.Killsteal:MenuElement({id = "UseIG", name = "Use Ignite", value = true})
 	self.Menu.Killsteal:MenuElement({id = "RR", name = "R KS on:", value = true, type = MENU, leftIcon = RIcon})
 	for i, hero in pairs(self:GetEnemyHeroes()) do
 	self.Menu.Killsteal.RR:MenuElement({id = "UseR"..hero.charName, name = "Use R on: "..hero.charName, value = true, leftIcon = RIcon})
@@ -222,6 +223,9 @@ function Veigar:Tick()
 	if self.Menu.Combo.comboActive:Value() then
 		self:Combo()
 	end
+	if self.Menu.Killsteal.UseIG:Value() then
+		self:UseIG()
+	end
 		self:KillstealQ()
 		self:KillstealW()
 		self:KillstealR()
@@ -230,6 +234,32 @@ function Veigar:Tick()
 		self:SpellonCCW()
 		self:AutoQ()
 		self:AutoQFarm()
+end
+
+function Veigar:UseIG()
+    local target = CurrentTarget(600)
+	if self.Menu.Killsteal.UseIG:Value() and target then 
+		local IGdamage = 70 + 20 * myHero.levelData.lvl
+   		if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" then
+       		if IsValidTarget(target, 600, true, myHero) and self:CanCast(SUMMONER_1) then
+				if IGdamage >= Veigar:HpPred(target, 1) + target.hpRegen * 1 then
+					Control.CastSpell(HK_SUMMONER_1, target)
+				end
+       		end
+		elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" then
+        	if IsValidTarget(target, 600, true, myHero) and self:CanCast(SUMMONER_2) then
+				if IGdamage >= Veigar:HpPred(target, 1) + target.hpRegen * 1 then
+					Control.CastSpell(HK_SUMMONER_2, target)
+				end
+       		end
+		end
+	end
+end
+
+function IsValidTarget(unit, range, onScreen)
+    local range = range or 1000
+    
+    return unit and unit.distance <= range and not unit.dead and unit.valid and unit.visible and unit.isTargetable and not (onScreen and not unit.pos2D.onScreen)
 end
 
 function Veigar:Clear()

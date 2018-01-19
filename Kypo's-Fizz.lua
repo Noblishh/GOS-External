@@ -7,7 +7,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0","Kypos","8.1"
+local Version,Author,LVersion = "v1.0.1","Kypos","8.1"
 
 local HKITEM = {
 	[ITEM_1] = HK_ITEM_1,
@@ -56,7 +56,7 @@ function Fizz:LoadSpells()
 	Q = {Range = 550, Delay = 0.25, Speed = 2000, Collision = false, aoe = false, Type = "line"}
 	W = {Range = 225, Delay = 0.25}
 	E = {Range = 800}
-	R = {Range = 1300, Width = 160, Delay = 0.25, Speed = 1300, Collision = false, aoe = true}
+	R = {Range = 1300, Width = 150, Delay = 0.60, Speed = 1300, Collision = false, aoe = true}
 
 end
 

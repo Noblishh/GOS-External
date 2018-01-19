@@ -46,9 +46,9 @@ local IgniteIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/f
 
 function Ahri:LoadSpells()
 
-	Q = {Range = 880, Width = 80, Delay = 0.45, Speed = 1700, Collision = false, aoe = false, Type = "line"}
+	Q = {Range = 880, Width = 80, Delay = 0, Speed = 1100, Collision = false, aoe = false, Type = "line"}
 	W = {Range = 700, Width = 80, Delay = 0.25, Speed = 800, Collision = false, aoe = false}
-	E = {Range = 975, Width = 80, Delay = 0.60, Speed = 1600, Collision = true, aoe = false, Type = "line"}
+	E = {Range = 975, Width = 80, Delay = 0.60, Speed = 1200, Collision = true, aoe = false, Type = "line"}
 
 end
 
@@ -591,10 +591,9 @@ end
 function Ahri:Clear()
 	for i = 1, Game.MinionCount() do
 	local minion = Game.Minion(i)
-	-- local qcount = self:ClearQCount()
 	if minion and minion.team == 300 or minion.team ~= myHero.team then
 		if self:CanCast(_Q) then 
-			if self.Menu.Clear.Enable:Value() and minion and minion:GetCollision(Q.width, Q.speed, Q.delay) - 1 >= self.Menu.Clear.QClear:Value() then
+			if self.Menu.Clear.Enable:Value() and minion and minion:GetCollision(80, 1100, 0) - 1 >= self.Menu.Clear.QClear:Value() then
 					Control.CastSpell(HK_Q, minion)
 					end
 				end
@@ -620,7 +619,7 @@ end
 
 function Ahri:EDMG()
     local level = myHero:GetSpellData(_E).level
-    local edamage = (({60, 95, 130, 165, 200})[level] + 0.60 * myHero.ap)
+    local edamage = (({60, 95, 130, 165, 200})[level] + 0.6 * myHero.ap)
 	return edamage
 end
 
