@@ -67,12 +67,11 @@ function Jinx:LoadMenu()
 	self.Menu:MenuElement({id = "Harass", name = "Harass", type = MENU})
 	self.Menu.Harass:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	self.Menu.Harass:MenuElement({id = "UseW", name = "W", value = true, leftIcon = WIcon})
-	self.Menu.Harass:MenuElement({id = "WMana", name = "Min mana to use W", value = 40, min = 0, max = 100, step = 1, leftIcon = WIcon})
 	self.Menu.Harass:MenuElement({id = "harassActive", name = "Harass key", key = string.byte("V")})
 
 	self.Menu:MenuElement({id = "Clear", name = "Clear", type = MENU})
 	self.Menu.Clear:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
-	self.Menu.Clear:MenuElement({id = "UseQXminion", name = "Use Q2 on X minions", value = true, leftIcon = QIcon})
+	-- self.Menu.Clear:MenuElement({id = "UseQXminion", name = "Use Q2 on X minions", value = true, leftIcon = QIcon})
 	self.Menu.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
 	
 	self.Menu:MenuElement({id = "Flee", name = "R key", type = MENU})
@@ -555,9 +554,9 @@ end
 function Jinx:Harass()
     local target = CurrentTarget(1400)
     if target == nil then return end
-    if self.Menu.Harass.UseW:Value() and target and self:CanCast(_W) and self.Menu.Harass.WMana:Value() < (100*myHero.mana/myHero.maxMana) then
+    if self.Menu.Harass.UseW:Value() and target and self:CanCast(_W) then
 	    if self:EnemyInRange(1400) then
-			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, 1400,W.Speed, myHero.pos, not W.ignorecol, W.Type )
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range, W.Speed, myHero.pos, not W.ignorecol, W.Type )
 		    if (HitChance > 0 ) then
 			    self:CastSpell(HK_W,castpos)
 		    end
