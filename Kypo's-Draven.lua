@@ -56,7 +56,7 @@ function Draven:LoadMenu()
 	self.Menu.Combo:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	-- self.Menu.Combo:MenuElement({id = "CatchQ", name = "Catch Q", value = true, leftIcon = QIcon})
 	self.Menu.Combo:MenuElement({id = "UseW", name = "W", value = true, leftIcon = WIcon})
-	self.Menu.Combo:MenuElement({id = "UseE", name = "E", value = false, leftIcon = EIcon})
+	-- self.Menu.Combo:MenuElement({id = "UseE", name = "E", value = false, leftIcon = EIcon})
 	self.Menu.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
 		
 	self.Menu:MenuElement({id = "Harass", name = "Harass", type = MENU})
