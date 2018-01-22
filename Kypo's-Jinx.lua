@@ -69,10 +69,10 @@ function Jinx:LoadMenu()
 	self.Menu.Harass:MenuElement({id = "UseW", name = "W", value = true, leftIcon = WIcon})
 	self.Menu.Harass:MenuElement({id = "harassActive", name = "Harass key", key = string.byte("V")})
 
-	self.Menu:MenuElement({id = "Clear", name = "Clear", type = MENU})
-	self.Menu.Clear:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
+	-- self.Menu:MenuElement({id = "Clear", name = "Clear", type = MENU})
+	-- self.Menu.Clear:MenuElement({id = "UseQ", name = "Q", value = true, leftIcon = QIcon})
 	-- self.Menu.Clear:MenuElement({id = "UseQXminion", name = "Use Q2 on X minions", value = true, leftIcon = QIcon})
-	self.Menu.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
+	-- self.Menu.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
 	
 	self.Menu:MenuElement({id = "Flee", name = "R key", type = MENU})
 	self.Menu.Flee:MenuElement({id = "UseR", name = "R", value = true, leftIcon = RIcon})
