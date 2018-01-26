@@ -1,4 +1,5 @@
 local Heroes = {"Lux"}
+if not table.contains(Heroes, myHero.charName) then return end
 
 require "DamageLib"
 
@@ -82,7 +83,8 @@ function Lux:LoadMenu()
 	self.Menu.Killsteal:MenuElement({id = "RCC", name = "R on CC", value = true, type = MENU, leftIcon = RIcon})
 	for i, hero in pairs(self:GetEnemyHeroes()) do
 	self.Menu.Killsteal.RCC:MenuElement({id = "UseR"..hero.charName, name = "Use R on: "..hero.charName, value = true, leftIcon = RIcon})
-	end	self.Menu.Killsteal:MenuElement({id = "RR", name = "R KS Normal (Prediction)", value = true, type = MENU, leftIcon = RIcon})
+	end	
+	self.Menu.Killsteal:MenuElement({id = "RR", name = "R KS Normal (Prediction)", value = true, type = MENU, leftIcon = RIcon})
 	for i, hero in pairs(self:GetEnemyHeroes()) do
 	self.Menu.Killsteal.RR:MenuElement({id = "UseR"..hero.charName, name = "Use R on: "..hero.charName, value = true, leftIcon = RIcon})
 	end

@@ -1,4 +1,5 @@
 local Heroes = {"Yasuo"}
+if not table.contains(Heroes, myHero.charName) then return end
 
 require "DamageLib"
 
