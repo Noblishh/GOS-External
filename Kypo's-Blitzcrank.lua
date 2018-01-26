@@ -57,7 +57,7 @@ function Blitzcrank:LoadMenu()
 	self.Menu:MenuElement({id = "Combo", name = "Combo", type = MENU})
 	self.Menu.Combo:MenuElement({id = "UseQ", name = "Q", value = true})
 	self.Menu.Combo:MenuElement({id = "UseE", name = "E", value = true})
-	self.Menu.Combo:MenuElement({id = "Rkey", name = "R Key", value = false, key = string.byte("6"), tooltip = "make sure this key is unique and has no movement"})
+	-- self.Menu.Combo:MenuElement({id = "Rkey", name = "R Key", value = false, key = string.byte("6"), tooltip = "make sure this key is unique and has no movement"})
 	self.Menu.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
 	
 	self.Menu:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
