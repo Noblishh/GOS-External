@@ -59,7 +59,6 @@ end
 function Leblanc:LoadMenu()
 	self.Menu = MenuElement({type = MENU, id = "Leblanc", name = "Kypo's Leblanc", leftIcon = HeroIcon})
 	self.Menu:MenuElement({id = "Combo", name = "Combo", type = MENU})
-	self.Menu.Combo:MenuElement({id = "UseR", name = "Use R to cast E, when combo is finished", value = true})
 	self.Menu.Combo:MenuElement({id = "Type", name = "Combo Logic", value = 1,drop = {"EWQ", "WEQ"}})
 	self.Menu.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
 		
