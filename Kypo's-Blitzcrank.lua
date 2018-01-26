@@ -46,7 +46,7 @@ local HeroIcon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/5/5
 
 function Blitzcrank:LoadSpells()
 
-	Q = {Range = 925, Width = 70, Delay = 0.30, Speed = 1800, Collision = true, aoe = false}
+	Q = {Range = 1050, Width = 70, Delay = 0.30, Speed = 1800, Collision = true, aoe = false}
 	E = {Range = 280, Delay = 0}
 	R = {Range = 600, Width = 0, Delay = 0.01, Speed = 347, Collision = false, aoe = false, Type = "circular"}
 
@@ -246,7 +246,7 @@ end
 -- DRAWINGS
 -----------------------------
 function Blitzcrank:Draw()
-if self.Menu.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, 925, self.Menu.Drawings.Q.Width:Value(), self.Menu.Drawings.Q.Color:Value()) end
+if self.Menu.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, 1050, self.Menu.Drawings.Q.Width:Value(), self.Menu.Drawings.Q.Color:Value()) end
 if self.Menu.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, 600, self.Menu.Drawings.R.Width:Value(), self.Menu.Drawings.R.Color:Value()) end
 	
     if self:CanCast(_Q) then
@@ -437,6 +437,5 @@ function Blitzcrank:SpellonCCQ()
 		end
 	end
 end
-
 
 Callback.Add("Load",function() _G[myHero.charName]() end)
