@@ -12,7 +12,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0.1","Kypos","8.2"
+local Version,Author,LVersion = "v1.0","Kypos","8.1"
 
 keybindings = { [ITEM_1] = HK_ITEM_1, [ITEM_2] = HK_ITEM_2, [ITEM_3] = HK_ITEM_3, [ITEM_4] = HK_ITEM_4, [ITEM_5] = HK_ITEM_5, [ITEM_6] = HK_ITEM_6}
 
@@ -53,7 +53,7 @@ function Jinx:LoadSpells()
 	Q = {Range = 700}
 	W = {Range = 1450, Width = 40, Delay = 0.37, Speed = 1200, Collision = true, aoe = false, Type = "line"}
 	E = {Range = 900, Width = 50, Delay = 0.25, Speed = 1600, Collision = false, aoe = false}
-	R = {Range = 20000, Width = 140, Delay = 0.80, Speed = 1700, Collision = true, aoe = false, Type = "line"}
+	R = {Range = 20000, Width = 140, Delay = 0.95, Speed = 1700, Collision = true, aoe = false, Type = "line"}
 
 end
 
@@ -98,7 +98,7 @@ function Jinx:LoadMenu()
 	self.Menu.Killsteal:MenuElement({id = "UseRCC", name = "R on CC Only", value = true, leftIcon = RIcon})
 	self.Menu.Killsteal:MenuElement({id = "RR", name = "R KS Normal (Prediction)", value = false, type = MENU, leftIcon = RIcon})
 	for i, hero in pairs(self:GetEnemyHeroes()) do
-	self.Menu.Killsteal.RR:MenuElement({id = "UseR"..hero.charName, name = "Use R on: "..hero.charName, value = false, leftIcon = RIcon})
+	self.Menu.Killsteal.RR:MenuElement({id = "UseR"..hero.charName, name = "Use R on: "..hero.charName, value = true, leftIcon = RIcon})
 	end
 	self.Menu.Killsteal:MenuElement({id = "blank", type = SPACE , name = ""})
 	self.Menu.Killsteal:MenuElement({id = "blank", type = SPACE , name = "When the game starts, wait 30 secs and reload"})
@@ -398,7 +398,6 @@ end
 function Jinx:Draw()
 if self.Menu.Drawings.W.Enabled:Value() then Draw.Circle(myHero.pos, 1450, self.Menu.Drawings.W.Width:Value(), self.Menu.Drawings.W.Color:Value()) end
 if self.Menu.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, 900, self.Menu.Drawings.E.Width:Value(), self.Menu.Drawings.E.Color:Value()) end
-Draw.CircleMinimap(myHero.pos, 6000, self.Menu.Drawings.W.Width:Value(), self.Menu.Drawings.W.Color:Value())
 
 			if self.Menu.Drawings.DrawDamage:Value() then
 		for i, hero in pairs(self:GetEnemyHeroes()) do
@@ -418,12 +417,20 @@ Draw.CircleMinimap(myHero.pos, 6000, self.Menu.Drawings.W.Width:Value(), self.Me
 			end
 		end	
 	end
-		if self:CanCast(_R) then
-			local target = CurrentTarget(6000)
+		if self:CanCast(_W) then
+			local target = CurrentTarget(W.Range)
 			if target == nil then return end
 			local temppred
 			if (TPred) then
-				local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 6000, R.Speed, myHero.pos, not R.ignorecol, R.Type )
+				local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, not W.ignorecol, W.Type )
+			end
+		end
+		if self:CanCast(_R) then
+			local target = CurrentTarget(2000)
+			if target == nil then return end
+			local temppred
+			if (TPred) then
+				local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range,R.Speed, myHero.pos, not R.ignorecol, R.Type )
 				Draw.Circle(castpos, 60, 3, Draw.Color(200, 255, 255, 255))
 			end
 		end
@@ -532,7 +539,7 @@ function Jinx:ComboQ()
     if target == nil then return end
     if self.Menu.Combo.UseQ:Value() and target and self:CanCast(_Q) then
 	local qrange = myHero:GetSpellData(_Q).range
-	    if myHero.pos:DistanceTo(target.pos) > qrange + 50 and myHero:GetSpellData(_Q).toggleState == 1 then
+	    if myHero.pos:DistanceTo(target.pos) > qrange and myHero:GetSpellData(_Q).toggleState == 1 then
 			Control.CastSpell(HK_Q)
 		else if myHero.pos:DistanceTo(target.pos) < qrange and myHero:GetSpellData(_Q).toggleState == 2 then
 			Control.CastSpell(HK_Q)
@@ -592,7 +599,7 @@ function Jinx:KillstealR()
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range,R.Speed, myHero.pos, not R.ignorecol, R.Type )
 		   	local Rdamage = Jinx:RDMG()
 			if Rdamage >= self:HpPred(target,1) + target.hpRegen * 2 then
-			if (HitChance > 0 ) and target and not target.dead and target.pos2D.onScreen then
+			if (HitChance > 0 ) and target and self:CanCast(_R) then
 			    self:CastSpell(HK_R,castpos)
 				end
 			end
@@ -601,12 +608,12 @@ function Jinx:KillstealR()
 end
 
 function Jinx:Flee()
-    local target = CurrentTarget(6000)
+    local target = CurrentTarget(20000)
 	if target == nil then return end
 	if self.Menu.Flee.UseR:Value() and self:CanCast(_R) then
-		if self:EnemyInRange(6000) then 
-			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 6000, R.Speed, myHero.pos, R.ignorecol, R.Type )
-			if (HitChance > 0 ) and target and not target.dead and target.pos2D.onScreen then
+		if self:EnemyInRange(20000) then 
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range, R.Speed, myHero.pos, not R.ignorecol, R.Type )
+			if (HitChance > 0 ) and target then
 			    self:CastSpell(HK_R,castpos)
 				end
 			end
@@ -649,7 +656,7 @@ function Jinx:RksCC()
 		   	if ImmobileEnemy then
 			local Rdamage = Jinx:RDMG()
 			if Rdamage >= self:HpPred(target,1) + target.hpRegen * 2 then
-			if (HitChance > 0 ) and target and not target.dead and target.pos2D.onScreen then
+			if (HitChance > 0 ) and target and self:CanCast(_R) then
 			    self:CastSpell(HK_R,castpos)
 				end
 			end
