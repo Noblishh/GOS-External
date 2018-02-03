@@ -855,7 +855,7 @@ function LeeSin:SmiteDMGQ()
 	return sdamage
 end
 
-function LeeSin:IsValidTarget(unit,range) 
+function IsValidTarget(unit,range) 
 	return unit ~= nil and unit.valid and unit.visible and not unit.dead and unit.isTargetable and not unit.isImmortal and unit.pos:DistanceTo(myHero.pos) <= 3340 
 end
 

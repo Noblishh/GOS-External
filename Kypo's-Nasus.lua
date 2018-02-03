@@ -419,7 +419,7 @@ function Nasus:Clear()
 			if myHero.pos:DistanceTo(target.pos) < 300 and target.isEnemy then
 			if target then
 				if self:QDMG(target) >= self:HpPred(target,1) then
-				Control.CastSpell("Q")
+				Control.CastSpell(HK_Q)
 				Control.Attack(target)
 					end
 				end
@@ -460,7 +460,7 @@ function Nasus:Lasthit()
 			local target = Game.Minion(i)
 			if myHero.pos:DistanceTo(target.pos) < 200 and self.Menu.Lasthit.UseQ:Value() and not target.dead and target.isEnemy then
 				if self:QDMG(target) >= self:HpPred(target,1) then
-				Control.CastSpell("Q")
+				Control.CastSpell(HK_Q)
 				Control.Attack(target)
 				end
 			end
@@ -479,7 +479,7 @@ function Nasus:Autofarm()
 			local target = Game.Minion(i)
 			if myHero.pos:DistanceTo(target.pos) < self.Menu.Bonus.QRange:Value() and self.Menu.Bonus.UseQ:Value() and target.isEnemy and not target.dead then
 				if self:QDMG(target) >= self:HpPred(target,1) then
-				Control.CastSpell("Q")
+				Control.CastSpell(HK_Q)
 				Control.Attack(target)
 				end
 			end
@@ -527,7 +527,7 @@ function Nasus:KillstealQ()
 			local level = myHero:GetSpellData(_Q).level	
 		   	local Qdamage = Nasus:QDMG(target)
 			if Qdamage >= self:HpPred(target,1) + target.hpRegen * 1 then
-			    Control.CastSpell("Q")
+			    Control.CastSpell(HK_Q)
 				Control.Attack(target)
 				end
 			end
