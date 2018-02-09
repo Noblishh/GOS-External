@@ -717,7 +717,7 @@ function Orianna:EnemiesNearAlly(pos,range)
 	local N = 0
 	for i = 1,Game.HeroCount()  do
 		local hero = Game.Hero(i)	
-		if isValidTarget(hero,range + hero.boundingRadius) and hero.isAlly and not hero.dead then
+		if isValidTarget(hero,range + hero.boundingRadius) and hero.isEnemy and not hero.dead then
 			N = N + 1
 		end
 	end
