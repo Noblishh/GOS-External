@@ -14,7 +14,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v1.0","Kypos","8.2"
+local Version,Author,LVersion = "v1.0.1","Kypos","8.3"
 
 if FileExist(COMMON_PATH .. "TPred.lua") then
 	require 'TPred'
@@ -360,7 +360,7 @@ elseif GetTickCount() > ultimocast + 200 then
 			if self:ultimapos(target):DistanceTo(pos2)<=302 then
 				Control.CastSpell(HK_R,target)
 			end
-		elseif self:CanCast(_W) then
+		elseif self:CanCast(_W) and self:CanCast(_Q) then
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 			if (HitChance > 0 ) then
 			    Control.CastSpell(HK_Q,castpos)	
