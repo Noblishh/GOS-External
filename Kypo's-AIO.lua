@@ -341,7 +341,7 @@ function Fizz:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})	
 
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -715,7 +715,7 @@ function Veigar:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -1170,7 +1170,7 @@ function Nasus:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -1199,10 +1199,13 @@ end
 function Nasus:Tick()
     if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true then return end
 	if AIO.Harass.harassActive:Value() then
-		self:Harass()
+		self:HarassE()
+		self:HarassQ()
 	end
 	if AIO.Combo.comboActive:Value() then
-		self:Combo()
+		self:ComboE()
+		self:ComboQ()
+		self:ComboW()
 	end
 	if AIO.Clear.clearActive:Value() then
 		self:Clear()
@@ -1250,7 +1253,7 @@ function Nasus:IsImmobileTarget(unit)
 		return false	
 	end
 
-function Nasus:Combo()
+function Nasus:ComboQ()
     if AIO.Combo.UseQ:Value() and Ready(_Q) then
 		local target = CurrentTarget(300)
 		if target == nil then return end
@@ -1258,7 +1261,9 @@ function Nasus:Combo()
 			    Control.CastSpell(HK_Q)
 		    end
 	    end
-
+	    end
+		
+function Nasus:ComboW()
 	if AIO.Combo.UseW:Value() and Ready(_W) then
 	local target = CurrentTarget(600)
     if target == nil then return end
@@ -1266,7 +1271,9 @@ function Nasus:Combo()
 			    Control.CastSpell(HK_W, target)
             end
 		end
- 
+		end
+		
+function Nasus:ComboE()
 	if AIO.Combo.UseE:Value() and Ready(_E) then
 	local target = CurrentTarget(650)
     if target == nil then return end
@@ -1276,7 +1283,7 @@ function Nasus:Combo()
 		end
 end
 
-function Nasus:Harass()
+function Nasus:HarassQ()
     local target = CurrentTarget(300)
     if target == nil then return end
     if AIO.Harass.UseQ:Value() and target and Ready(_Q) then
@@ -1284,10 +1291,12 @@ function Nasus:Harass()
 			    Control.CastSpell(HK_Q)
 		    end
 	    end
-
-	if AIO.Harass.UseE:Value() and target and Ready(_E) then
+	    end
+		
+function Nasus:HarassE()
     local target = CurrentTarget(650)
     if target == nil then return end
+	if AIO.Harass.UseE:Value() and target and Ready(_E) then
 		if EnemyInRange(650) and target then 
 			    Control.CastSpell(HK_E, target)
 		    end
@@ -1939,7 +1948,7 @@ function Zed:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -2472,7 +2481,7 @@ function Yasuo:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -3255,7 +3264,7 @@ function Tristana:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 	
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -4300,7 +4309,7 @@ function Syndra:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 	
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -4718,7 +4727,7 @@ function Jinx:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -6296,7 +6305,7 @@ function Leblanc:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})	
 
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -7564,7 +7573,7 @@ function Draven:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 	
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -8506,7 +8515,7 @@ function Fizz:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})	
 
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -9772,7 +9781,7 @@ function Lux:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 	
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -9978,7 +9987,7 @@ function Lux:Combo()
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, 1150,Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
-			Control.CastSpell(HK_Q, castpos)
+			CastSpell(HK_Q, castpos)
 		    end
 	    end
     end
@@ -9988,8 +9997,8 @@ function Lux:Combo()
     if AIO.Combo.UseE:Value() and target and Ready(_E) then
 	    if EnemyInRange(E.Range) then
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range, E.Speed, myHero.pos, E.ignorecol, E.Type )
-		    if (HitChance > 0 ) then
-			Control.CastSpell(HK_E, castpos)
+		    if (HitChance > 0 ) and not HasBuff(myHero, "LuxLightstrikeToggle") then
+			CastSpell(HK_E, castpos)
 		    end
 	    end
     end
@@ -10002,7 +10011,7 @@ function Lux:Harass()
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, 1150,Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
-			Control.CastSpell(HK_Q, castpos)
+			CastSpell(HK_Q, castpos)
 		    end
 	    end
     end
@@ -10012,8 +10021,8 @@ function Lux:Harass()
     if AIO.Harass.UseE:Value() and target and Ready(_E) then
 	    if EnemyInRange(E.Range) then
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range, E.Speed, myHero.pos, E.ignorecol, E.Type )
-		    if (HitChance > 0 ) then
-			Control.CastSpell(HK_E, castpos)
+		    if (HitChance > 0 ) and not HasBuff(myHero, "LuxLightstrikeToggle") then
+			CastSpell(HK_E, castpos)
 		    end
 	    end
     end
@@ -10051,7 +10060,7 @@ function Lux:KillstealQ()
 		   	local Qdamage = Lux:QDMG()
 			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
 			if (HitChance > 0 ) and Ready(_Q) then
-			Control.CastSpell(HK_Q, castpos)
+			CastSpell(HK_Q, castpos)
 			end
 			end
 		end
@@ -10068,7 +10077,7 @@ function Lux:KillstealE()
 		   	local Edamage = Lux:EDMG()
 			if Edamage >= HpPred(target,1) + target.hpRegen * 1 then
 			if (HitChance > 0 ) and Ready(_E) then
-			Control.CastSpell(HK_E, castpos)
+			CastSpell(HK_E, castpos)
 			end
 			end
 		end
@@ -10085,7 +10094,7 @@ function Lux:KillstealR()
 		   	local Rdamage = Lux:RDMG()
 			if Rdamage >= HpPred(target,1) + target.hpRegen * 2 then
 			if (HitChance > 0 ) and target and Ready(_R) then
-			Control.CastSpell(HK_R, castpos)
+			CastSpell(HK_R, castpos)
 				end
 			end
 		end
@@ -10102,7 +10111,7 @@ function Lux:SpellonCCQ()
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 			if ImmobileEnemy then
 			if (HitChance > 0 ) then
-			Control.CastSpell(HK_Q, castpos)
+			CastSpell(HK_Q, castpos)
 			end
 			end
 		end
@@ -10131,7 +10140,7 @@ function Lux:RksCC()
 			local Rdamage = Lux:RDMG()
 			if Rdamage >= HpPred(target,1) + target.hpRegen * 2 then
 			if (HitChance > 0 ) and target and Ready(_R) then
-			Control.CastSpell(HK_R, castpos)
+			CastSpell(HK_R, castpos)
 				end
 			end
 		end
@@ -10147,7 +10156,7 @@ function Lux:Flee()
 			local level = myHero:GetSpellData(_R).level	
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range,R.Speed, myHero.pos, R.ignorecol, R.Type )
 			if (HitChance > 0 ) then
-			Control.CastSpell(HK_R, castpos)
+			CastSpell(HK_R, castpos)
 				end
 			end
 		end
@@ -10169,7 +10178,7 @@ function Lux:Clear()
 	end	
 		local BestPos, BestHit = GetBestCircularFarmPosition(1000, 350 + 40, eMinions)
 		if BestHit >= AIO.Clear.EHit:Value() then
-			Control.CastSpell(HK_E,BestPos)
+			CastSpell(HK_E,BestPos)
 		end
 	end
 end
@@ -10189,64 +10198,66 @@ function Nidalee:LoadSpells()
 end
 
 function Nidalee:LoadMenu()
-	self.Menu = MenuElement({type = MENU, id = "Nidalee", name = "Kypo's Nidalee", leftIcon = AIOIcon})
-	self.Menu:MenuElement({id = "Combo", name = "Combo", type = MENU})
-	self.Menu.Combo:MenuElement({id = "UseQ", name = "Q", value = true})
-	self.Menu.Combo:MenuElement({id = "UseW", name = "W", value = true})
-	self.Menu.Combo:MenuElement({id = "UseE", name = "E", value = true})
-	self.Menu.Combo:MenuElement({id	= "Eheal",name="Min Health to heal -> %",value=50,min=0,max=70})
-	self.Menu.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
+	AIO = MenuElement({type = MENU, id = "Nidalee", name = "Kypo's Nidalee", leftIcon = AIOIcon})
+	AIO:MenuElement({id = "Combo", name = "Combo", type = MENU})
+	AIO.Combo:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Combo:MenuElement({id = "UseW", name = "W", value = true})
+	AIO.Combo:MenuElement({id = "UseWH", name = "Cast W as Human?", value = false})
+	AIO.Combo:MenuElement({id = "UseE", name = "E", value = true})
+	AIO.Combo:MenuElement({id	= "Eheal",name="Min Health to heal -> %",value=50,min=0,max=70})
+	AIO.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
 
-	self.Menu:MenuElement({id = "Clear", name = "Clear", type = MENU})
-	self.Menu.Clear:MenuElement({id = "UseQ", name = "Q", value = true})
-	self.Menu.Clear:MenuElement({id = "UseW", name = "W", value = true})
-	self.Menu.Clear:MenuElement({id = "UseE", name = "E", value = true})
-	self.Menu.Clear:MenuElement({id	= "Eheal",name="Min Health to heal -> %",value=40,min=0,max=70})
-	self.Menu.Clear:MenuElement({id = "WECount", name = "Use W/E on X minions (Lane Only)", value = 3, min = 1, max = 5, step = 1})
-	self.Menu.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
+	AIO:MenuElement({id = "Clear", name = "Clear", type = MENU})
+	AIO.Clear:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Clear:MenuElement({id = "UseW", name = "W", value = true})
+	AIO.Clear:MenuElement({id = "UseWH", name = "Cast W as Human?", value = false})
+	AIO.Clear:MenuElement({id = "UseE", name = "E", value = true})
+	AIO.Clear:MenuElement({id	= "Eheal",name="Min Health to heal -> %",value=40,min=0,max=70})
+	AIO.Clear:MenuElement({id = "WECount", name = "Use W/E on X minions (Lane Only)", value = 3, min = 1, max = 5, step = 1})
+	AIO.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
 	
-	self.Menu:MenuElement({id = "Lasthit", name = "Lasthit", type = MENU})
-	self.Menu.Lasthit:MenuElement({id = "UseQ", name = "Q", value = true})
-	self.Menu.Lasthit:MenuElement({id = "lasthitActive", name = "Lasthit key", key = string.byte("X")})
+	AIO:MenuElement({id = "Lasthit", name = "Lasthit", type = MENU})
+	AIO.Lasthit:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Lasthit:MenuElement({id = "lasthitActive", name = "Lasthit key", key = string.byte("X")})
 	
-	self.Menu:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
-	self.Menu.Killsteal:MenuElement({id = "UseQ", name = "{Q} Javelin Toss", key = string.byte("T")})
-	self.Menu.Killsteal:MenuElement({id = "Ignite", name = "Ignite", value = true})	
+	AIO:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
+	AIO.Killsteal:MenuElement({id = "UseQ", name = "{Q} Javelin Toss", key = string.byte("T")})
+	AIO.Killsteal:MenuElement({id = "Ignite", name = "Ignite", value = true})	
 
-	self.Menu:MenuElement({id = "CC", name = "CC", type = MENU})
-	self.Menu.CC:MenuElement({id = "UseQ", name = "Q", value = true})
-	self.Menu.CC:MenuElement({id = "UseW", name = "W Trap", value = true})
+	AIO:MenuElement({id = "CC", name = "CC", type = MENU})
+	AIO.CC:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.CC:MenuElement({id = "UseW", name = "W Trap", value = true})
 	
-	self.Menu:MenuElement({id = "Items", name = "Items", type = MENU})
-    self.Menu.Items:MenuElement({id = "Zhonya", name = "Zhonya", value = true})
-    self.Menu.Items:MenuElement({id = "ZhonyaHp", name = "Min HP",value=15,min=1,max=30})
-	self.Menu.Items:MenuElement({id = "Protobelt", name = "Hextech Protobelt", value = true})
-	self.Menu.Items:MenuElement({id = "GLP", name = "Hextech GLP", value = true})
-	self.Menu.Items:MenuElement({id = "Gunblade", name = "Hextech Gunblade", value = true})	
+	AIO:MenuElement({id = "Items", name = "Items", type = MENU})
+    AIO.Items:MenuElement({id = "Zhonya", name = "Zhonya", value = true})
+    AIO.Items:MenuElement({id = "ZhonyaHp", name = "Min HP",value=15,min=1,max=30})
+	AIO.Items:MenuElement({id = "Protobelt", name = "Hextech Protobelt", value = true})
+	AIO.Items:MenuElement({id = "GLP", name = "Hextech GLP", value = true})
+	AIO.Items:MenuElement({id = "Gunblade", name = "Hextech Gunblade", value = true})	
 	
-	self.Menu:MenuElement({id = "Drawings", name = "Drawings", type = MENU})
+	AIO:MenuElement({id = "Drawings", name = "Drawings", type = MENU})
 	--Q
-	self.Menu.Drawings:MenuElement({id = "Q", name = "Draw Q range", type = MENU})
-    self.Menu.Drawings.Q:MenuElement({id = "Human", name = "Human", value = true})       
-    self.Menu.Drawings.Q:MenuElement({id = "Animal", name = "Animal", value = true})       
-    self.Menu.Drawings.Q:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    self.Menu.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
+	AIO.Drawings:MenuElement({id = "Q", name = "Draw Q range", type = MENU})
+    AIO.Drawings.Q:MenuElement({id = "Human", name = "Human", value = true})       
+    AIO.Drawings.Q:MenuElement({id = "Animal", name = "Animal", value = true})       
+    AIO.Drawings.Q:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	--W
-	self.Menu.Drawings:MenuElement({id = "W", name = "Draw W range", type = MENU})
-    self.Menu.Drawings.W:MenuElement({id = "Human", name = "Human", value = true})       
-    self.Menu.Drawings.W:MenuElement({id = "Animal", name = "Animal", value = true})       
-    self.Menu.Drawings.W:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    self.Menu.Drawings.W:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 87, 51)})		
+	AIO.Drawings:MenuElement({id = "W", name = "Draw W range", type = MENU})
+    AIO.Drawings.W:MenuElement({id = "Human", name = "Human", value = true})       
+    AIO.Drawings.W:MenuElement({id = "Animal", name = "Animal", value = true})       
+    AIO.Drawings.W:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.W:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 87, 51)})		
 	
-	self.Menu.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
-    self.Menu.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
+	AIO.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
+    AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 	
-	self.Menu:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	self.Menu:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
-	self.Menu:MenuElement({id = "blank", type = SPACE , name = ""})
-	self.Menu:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
-	self.Menu:MenuElement({id = "blank", type = SPACE , name = "by "..Author.. ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = "by "..Author.. ""})
 end
 
 
@@ -10270,7 +10281,7 @@ end
 function Nidalee:Tick()
     if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true then return end
 	
-	if self.Menu.Combo.comboActive:Value() then
+	if AIO.Combo.comboActive:Value() then
 		self:DistQ()
 		self:ComboQAnimal()
 		self:ComboQHuman()
@@ -10281,7 +10292,7 @@ function Nidalee:Tick()
 		self:ChangeToRHuman()
 		self:Items()
 	end
-	if self.Menu.Clear.clearActive:Value() then
+	if AIO.Clear.clearActive:Value() then
 		self:Clear()
 		self:ClearQ()
 		self:ClearW()
@@ -10293,21 +10304,23 @@ function Nidalee:Tick()
 		self:ClearQQminion()
 		self:ClearWMinionJump()
 	end
-	if self.Menu.Lasthit.lasthitActive:Value() then
+	if AIO.Lasthit.lasthitActive:Value() then
 		self:Lasthit()
-	end				
+	end		
+	if AIO.Killsteal.UseQ:Value() then
 		self:KillstealQ()
+	end	
 		self:CC()
-		self:CCW()
+		-- self:CCW()
 		self:Zhonya()
 end
 
 function Nidalee:Draw()
-if self.Menu.Drawings.Q.Human:Value() and myHero:GetSpellData(_Q).name == "JavelinToss" then Draw.Circle(myHero.pos, Q.Range, self.Menu.Drawings.Q.Width:Value(), self.Menu.Drawings.Q.Color:Value()) end
-if self.Menu.Drawings.W.Human:Value() and myHero:GetSpellData(_Q).name == "JavelinToss" then Draw.Circle(myHero.pos, W.Range, self.Menu.Drawings.W.Width:Value(), self.Menu.Drawings.W.Color:Value()) end
-if self.Menu.Drawings.W.Animal:Value() and myHero:GetSpellData(_Q).name == "Takedown" then Draw.Circle(myHero.pos, 400, self.Menu.Drawings.W.Width:Value(), self.Menu.Drawings.W.Color:Value()) end
+if AIO.Drawings.Q.Human:Value() and myHero:GetSpellData(_Q).name == "JavelinToss" then Draw.Circle(myHero.pos, Q.Range, AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
+if AIO.Drawings.W.Human:Value() and myHero:GetSpellData(_Q).name == "JavelinToss" then Draw.Circle(myHero.pos, W.Range, AIO.Drawings.W.Width:Value(), AIO.Drawings.W.Color:Value()) end
+if AIO.Drawings.W.Animal:Value() and myHero:GetSpellData(_Q).name == "Takedown" then Draw.Circle(myHero.pos, 400, AIO.Drawings.W.Width:Value(), AIO.Drawings.W.Color:Value()) end
 
-if self.Menu.Drawings.DrawDamage:Value() then
+if AIO.Drawings.DrawDamage:Value() then
 		for i, hero in pairs(GetEnemyHeroes()) do
 			local barPos = hero.hpBar
 			if not hero.dead and hero.pos2D.onScreen and barPos.onScreen and hero.visible then
@@ -10325,12 +10338,12 @@ if self.Menu.Drawings.DrawDamage:Value() then
 					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
 					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
 					local xPosStart = barPos.x + barXOffset + percentHealthAfterDamage * 100
-					Draw.Line(xPosStart, barPos.y + barYOffset, xPosEnd, barPos.y + barYOffset, 10, self.Menu.Drawings.HPColor:Value())
+					Draw.Line(xPosStart, barPos.y + barYOffset, xPosEnd, barPos.y + barYOffset, 10, AIO.Drawings.HPColor:Value())
 				end
 			end
 		end	
 	end
-if self.Menu.Drawings.DrawDamage:Value() then
+if AIO.Drawings.DrawDamage:Value() then
 		for i, hero in pairs(GetEnemyHeroes()) do
 			local barPos = hero.hpBar
 			if not hero.dead and hero.pos2D.onScreen and barPos.onScreen and hero.visible then
@@ -10386,7 +10399,7 @@ end
 function Nidalee:ComboQHuman()
     local target = CurrentTarget(1500)
     if target == nil then return end
-    if self.Menu.Combo.UseQ:Value() and target and Ready(_Q) and self:isHuman() and target.pos2D.onScreen then
+    if AIO.Combo.UseQ:Value() and target and Ready(_Q) and self:isHuman() and target.pos2D.onScreen then
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay, Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
@@ -10399,7 +10412,7 @@ end
 function Nidalee:ComboQAnimal()
 	local target = CurrentTarget(450)
     if target == nil then return end  
-    if self.Menu.Combo.UseQ:Value() and target and Ready(_Q) and self:isAnimal() and target.pos2D.onScreen then	
+    if AIO.Combo.UseQ:Value() and target and Ready(_Q) and self:isAnimal() and target.pos2D.onScreen then	
 		if myHero.pos:DistanceTo(target.pos) < 450 then
 		Control.CastSpell(HK_Q)
 	end
@@ -10422,17 +10435,20 @@ function Nidalee:ComboWAnimal()
 local target = CurrentTarget(900)
     if target == nil then return end
 	if target.pos2D.onScreen then
-		if self.Menu.Combo.UseW:Value() and target.pos:DistanceTo(myHero.pos) < 400 and not HasBuff(target, "NidaleePassiveHunted") and self:isAnimal() and Ready(_W) then
+		if AIO.Combo.UseW:Value() and target.pos:DistanceTo(myHero.pos) < 400 and not HasBuff(target, "NidaleePassiveHunted") and self:isAnimal() and Ready(_W) then
 			    Control.CastSpell(HK_W, target)
-		else if self.Menu.Combo.UseW:Value() and target.pos:DistanceTo(myHero.pos) < 700 and HasBuff(target, "NidaleePassiveHunted") and self:isAnimal() and Ready(_W) then
+		else if AIO.Combo.UseW:Value() and target.pos:DistanceTo(myHero.pos) < 670 and HasBuff(target, "NidaleePassiveHunted") and self:isAnimal() and Ready(_W) then
 			    Control.CastSpell(HK_W, target)
-		else if self.Menu.Combo.UseW:Value() and target.pos:DistanceTo(myHero.pos) < 700 and HasBuff(target, "NidaleePassiveHunted") and self:isHuman() and Ready(_R) then
+		else if AIO.Combo.UseW:Value() and target.pos:DistanceTo(myHero.pos) < 670 and HasBuff(target, "NidaleePassiveHunted") and self:isHuman() and Ready(_R) then
 			    Control.CastSpell(HK_R)
-		else if self.Menu.Combo.UseW:Value() and target.pos:DistanceTo(myHero.pos) < 900 and self:isHuman() and Ready(_W) and not Ready(_Q) then
+		else if AIO.Combo.UseW:Value() and target.pos:DistanceTo(myHero.pos) < 900 and self:isHuman() and Ready(_W) and not Ready(_Q) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay, W.Width, W.Range, W.Speed, myHero.pos, W.ignorecol, W.Type )
-		    if (HitChance > 0 ) then
+		    if (HitChance > 0 ) and AIO.Combo.UseWH:Value() then
 			    Control.CastSpell(HK_W, castpos)
+		else if AIO.Combo.UseWH:Value() == false and HasBuff(target, "NidaleePassiveHunted") and self:isHuman() and Ready(_R) then
+			Control.CastSpell(HK_R)
 	end
+end
 end
 end
 end
@@ -10443,9 +10459,9 @@ end
 function Nidalee:AutoHealCombo()
 local target = CurrentTarget(900)
     if target == nil then return end
-		if myHero.health<=myHero.maxHealth * self.Menu.Combo.Eheal:Value()/100 and target.pos:DistanceTo(myHero.pos) < 900 and self:isHuman() and Ready(_E) then
+		if myHero.health<=myHero.maxHealth * AIO.Combo.Eheal:Value()/100 and target.pos:DistanceTo(myHero.pos) < 900 and self:isHuman() and Ready(_E) then
 			    Control.CastSpell(HK_E, myHero)		
-		else if myHero.health<=myHero.maxHealth * self.Menu.Combo.Eheal:Value()/100 and target.pos:DistanceTo(myHero.pos) < 900 and self:isAnimal() and Ready(_R) then
+		else if myHero.health<=myHero.maxHealth * AIO.Combo.Eheal:Value()/100 and target.pos:DistanceTo(myHero.pos) < 900 and self:isAnimal() and Ready(_R) then
 			    Control.CastSpell(HK_R)
 	end
 end
@@ -10467,7 +10483,7 @@ end
 function Nidalee:ComboEAnimal()
 local target = CurrentTarget(350)
     if target == nil then return end
-		if self.Menu.Combo.UseE:Value() and target.pos:DistanceTo(myHero.pos) < 350 and self:isAnimal() and Ready(_E) then
+		if AIO.Combo.UseE:Value() and target.pos:DistanceTo(myHero.pos) < 350 and self:isAnimal() and Ready(_E) then
 			    Control.CastSpell(HK_E, target)
 	end
 end
@@ -10487,11 +10503,11 @@ function Nidalee:Clear()
 			end	
 	end	
 		local BestPos, BestHit = GetBestCircularFarmPosition(350, 300, wMinions)
-		if BestHit >= self.Menu.Clear.WECount:Value() and self.Menu.Clear.UseW:Value() then
+		if BestHit >= AIO.Clear.WECount:Value() and AIO.Clear.UseW:Value() then
 		Control.CastSpell(HK_W,BestPos)			
 		else if Ready(_E) and self:isAnimal() then
 		local BestPosE, BestHitE = GetBestCircularFarmPosition(200, 350, wMinions)
-		if BestHitE >= self.Menu.Clear.WECount:Value() and self.Menu.Clear.UseE:Value() then
+		if BestHitE >= AIO.Clear.WECount:Value() and AIO.Clear.UseE:Value() then
 		Control.CastSpell(HK_E,BestPosE)
 		end
 	end
@@ -10500,7 +10516,7 @@ end
 end
 
 function Nidalee:ClearE()
-	if self.Menu.Clear.UseE:Value() and self:isAnimal() and Ready(_E) then
+	if AIO.Clear.UseE:Value() and self:isAnimal() and Ready(_E) then
 		for i = 1, Game.MinionCount() do
 		local minion = Game.Minion(i)
 			if minion.team == 300 then
@@ -10514,7 +10530,7 @@ end
 end
 
 function Nidalee:ClearQ()
-	if self.Menu.Clear.UseQ:Value() and self:isHuman() and Ready(_Q) then
+	if AIO.Clear.UseQ:Value() and self:isHuman() and Ready(_Q) then
 		for i = 1, Game.MinionCount() do
 		local minion = Game.Minion(i)
 			if minion.team == 300 or minion.name == "SRU_Krug" then
@@ -10533,7 +10549,7 @@ end
 end
 
 function Nidalee:ClearQQminion()
-	if self.Menu.Clear.UseQ:Value() and self:isAnimal() and Ready(_Q) then
+	if AIO.Clear.UseQ:Value() and self:isAnimal() and Ready(_Q) then
 		for i = 1, Game.MinionCount() do
 		local minion = Game.Minion(i)
 			if minion.team == 300 then
@@ -10546,16 +10562,20 @@ end
 end
 
 function Nidalee:ClearW()
-if self.Menu.Clear.UseW:Value() then
+if AIO.Clear.UseW:Value() then
 		for i = 1, Game.MinionCount() do
 		local minion = Game.Minion(i)
 			if minion.team == 300 then
-			if minion.pos:DistanceTo(myHero.pos) < 900 then
-		   local castpos,HitChance, pos = TPred:GetBestCastPosition(minion, W.Delay, W.Width, W.Range, W.Speed, myHero.pos, W.ignorecol, W.Type )
-		    if (HitChance > 0 ) and Ready(_W) then
+			if minion.pos:DistanceTo(myHero.pos) < 900 and self:isHuman() then
+		   local castpos,HitChance, pos = TPred:GetBestCastPosition(minion, 0.70, W.Width, W.Range, W.Speed, myHero.pos, W.ignorecol, W.Type )
+		    if (HitChance > 0 ) and Ready(_W) and AIO.Clear.UseWH:Value() then
 			Control.CastSpell(HK_W,castpos)
+		else if AIO.Clear.UseWH:Value() == false and HasBuff(minion, "NidaleePassiveHunted") and self:isHuman() and Ready(_R) then
+			Control.CastSpell(HK_R)
 		else if HasBuff(minion, "NidaleePassiveHunted") and self:isHuman() and Ready(_R) then
-			Control.CastSpell(HK_R)	
+			Control.CastSpell(HK_R)
+		else if self:isAnimal() and HasBuff(minion, "NidaleePassiveHunted") and Ready(_W) and minion.pos:DistanceTo(myHero.pos) < 700 then
+			Control.CastSpell(HK_W, minion)
 		else if self:isAnimal() and not HasBuff(minion, "NidaleePassiveHunted") and Ready(_W) and minion.pos:DistanceTo(myHero.pos) < 400 then
 			Control.CastSpell(HK_W, minion)
 							end
@@ -10566,9 +10586,11 @@ if self.Menu.Clear.UseW:Value() then
 		end
 	end
 end
+end
+end
 
 function Nidalee:ClearWMinionJump()
-if self.Menu.Clear.UseW:Value() then
+if AIO.Clear.UseW:Value() then
 		for i = 1, Game.MinionCount() do
 		local minion = Game.Minion(i)
 			if minion.team == 300 then
@@ -10587,9 +10609,9 @@ function Nidalee:AutoHealClear()
 		local minion = Game.Minion(i)
 			if minion.team == 300 then
 			if minion.pos:DistanceTo(myHero.pos) < 600 then
-		if myHero.health<=myHero.maxHealth * self.Menu.Clear.Eheal:Value()/100 and minion.pos:DistanceTo(myHero.pos) < 600 and self:isHuman() and Ready(_E) then
+		if myHero.health<=myHero.maxHealth * AIO.Clear.Eheal:Value()/100 and minion.pos:DistanceTo(myHero.pos) < 600 and self:isHuman() and Ready(_E) then
 			    Control.CastSpell(HK_E, myHero)		
-		else if myHero.health<=myHero.maxHealth * self.Menu.Clear.Eheal:Value()/100 and minion.pos:DistanceTo(myHero.pos) < 60 and self:isAnimal() and Ready(_R) then
+		else if myHero.health<=myHero.maxHealth * AIO.Clear.Eheal:Value()/100 and minion.pos:DistanceTo(myHero.pos) < 60 and self:isAnimal() and Ready(_R) then
 			    Control.CastSpell(HK_R)
 	end
 end
@@ -10623,13 +10645,13 @@ end
 -- SRU_
 
 function Nidalee:Lasthit()
-	if Ready(_Q) and self.Menu.Lasthit.UseQ:Value() then
+	if Ready(_Q) and AIO.Lasthit.UseQ:Value() then
   		for i = 1, Game.MinionCount() do
 			local minion = Game.Minion(i)
 			local Qdamage = Nidalee:QDMG()
 			local QdamageA = Nidalee:QdamageAnimal()
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(minion, Q.Delay, Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
-			if myHero.pos:DistanceTo(minion.pos) < Q.Range and self.Menu.Lasthit.UseQ:Value() and minion.isEnemy and not minion.dead then
+			if myHero.pos:DistanceTo(minion.pos) < Q.Range and AIO.Lasthit.UseQ:Value() and minion.isEnemy and not minion.dead then
 				if Qdamage >= HpPred(minion,1) and self:isHuman() and (HitChance > 0 ) then
 			    CastSpell(HK_Q, castpos)
 			else if minion.pos:DistanceTo(myHero.pos) < 300 and self:isAnimal() then
@@ -10670,7 +10692,7 @@ end
 function Nidalee:KillstealQ()
 	local target = CurrentTarget(Q.Range)
 	if target == nil then return end
-	if self.Menu.Killsteal.UseQ:Value() and target and Ready(_Q) then
+	if AIO.Killsteal.UseQ:Value() and target and Ready(_Q) then
 		if EnemyInRange(Q.Range) then 
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		   	local Qdamage = Nidalee:QDMG()
@@ -10689,7 +10711,7 @@ end
 function Nidalee:Zhonya()
     local target = CurrentTarget(500)
 	if target == nil then return end
-		if self.Menu.Items.Zhonya:Value() and myHero.pos:DistanceTo(target.pos) < 500 and myHero.health<=myHero.maxHealth * self.Menu.Items.ZhonyaHp:Value()/100 then
+		if AIO.Items.Zhonya:Value() and myHero.pos:DistanceTo(target.pos) < 500 and myHero.health<=myHero.maxHealth * AIO.Items.ZhonyaHp:Value()/100 then
 		local Zhonya = GetInventorySlotItem(3157) or GetInventorySlotItem(2421)
 		if Zhonya then
 			Control.CastSpell(HKITEM[Zhonya])
@@ -10699,7 +10721,7 @@ function Nidalee:Zhonya()
 function Nidalee:Items()	
 	local target = CurrentTarget(700)
 	if target == nil then return end
-		if self.Menu.Items.Protobelt:Value() then
+		if AIO.Items.Protobelt:Value() then
 		local protobelt = GetInventorySlotItem(3152)
 		if protobelt and EnemyInRange(700) then
 			Control.CastSpell(HKITEM[protobelt], target)
@@ -10708,7 +10730,7 @@ function Nidalee:Items()
 	
 	local target = CurrentTarget(800)
 	if target == nil then return end
-		if self.Menu.Items.GLP:Value() then
+		if AIO.Items.GLP:Value() then
 		local GLP = GetInventorySlotItem(3030)
 		if GLP and EnemyInRange(800) then
 			Control.CastSpell(HKITEM[GLP], target)
@@ -10717,7 +10739,7 @@ function Nidalee:Items()
 	
 	local target = CurrentTarget(700)
 	if target == nil then return end
-		if self.Menu.Items.Gunblade:Value() then
+		if AIO.Items.Gunblade:Value() then
 		local Gunblade = GetInventorySlotItem(3146)
 		if Gunblade and EnemyInRange(700 ) then
 			Control.CastSpell(HKITEM[Gunblade], target)
@@ -10729,7 +10751,7 @@ end
 function Nidalee:IgniteSteal()
 	local target = CurrentTarget(600)
 	if target == nil then return end
-	if self.Menu.Killsteal.Ignite:Value() and target then
+	if AIO.Killsteal.Ignite:Value() and target then
 		if EnemyInRange(600) then 
 			local IgniteDMG = 50+20*myHero.levelData.lvl
 			if IgniteDMG >= HpPred(target,1) + target.hpRegen * 3 then
@@ -10746,13 +10768,13 @@ function Nidalee:IgniteSteal()
 function Nidalee:CC()
     local target = CurrentTarget(Q.Range)
 	if target == nil then return end
-	if self.Menu.CC.UseQ:Value() and target and Ready(_Q) then
+	if AIO.CC.UseQ:Value() and target and Ready(_Q) then
 		if EnemyInRange(Q.Range) then 
 			local ImmobileEnemy = self:IsImmobileTarget(target)
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 			if ImmobileEnemy and self:isHuman() and (HitChance > 0 ) then
 				Control.CastSpell(HK_Q, castpos)
-			else if self:isAnimal() and Ready(_R) then
+			else if self:isAnimal() and ImmobileEnemy and Ready(_R) and target.pos:DistanceTo(myHero.pos) > 900 then
 				Control.CastSpell(HK_R)
 				end
 			end
@@ -10761,15 +10783,15 @@ function Nidalee:CC()
 	end
 	
 function Nidalee:CCW()
-    local target = CurrentTarget(Q.Range)
+    local target = CurrentTarget(W.Range)
 	if target == nil then return end
-	if self.Menu.CC.UseQ:Value() and target and Ready(_Q) then
-		if EnemyInRange(Q.Range) then 
+	if AIO.CC.UseW:Value() and target and Ready(_W) then
+		if EnemyInRange(W.Range) then 
 			local ImmobileEnemy = self:IsImmobileTarget(target)
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay, W.Width, W.Range, W.Speed, myHero.pos, W.ignorecol, W.Type )
 			if ImmobileEnemy and self:isHuman() and (HitChance > 0 ) then
 				Control.CastSpell(HK_W, castpos)
-			else if self:isAnimal() and Ready(_R) then
+			else if self:isAnimal() and ImmobileEnemy and Ready(_R) and EnemyInRange(W.Range) then
 				Control.CastSpell(HK_R)
 				end
 			end
@@ -10849,7 +10871,7 @@ function Annie:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})	
 
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
