@@ -1,4 +1,4 @@
-local Heroes = {"Ahri","Blitzcrank","Draven","Ezreal","Fizz","Jinx","Kalista","KogMaw","Leblanc","LeeSin","Lux","Nasus","Nidalee","Orianna","Syndra","Teemo","Thresh","Tristana","Veigar","Yasuo","Zed", "Annie"}
+local Heroes = {"Ahri","Azir","Blitzcrank","Draven","Ezreal","Fizz","Jinx","Kalista","KogMaw","Leblanc","LeeSin","Lux","Nasus","Nidalee","Orianna","Syndra","Teemo","Thresh","Tristana","Caitlyn","Veigar","Yasuo","Zed", "Annie","Akali"}
 if not table.contains(Heroes, myHero.charName) then return end
 
 require "DamageLib"
@@ -16,7 +16,7 @@ local barHeight = 8
 local barWidth = 103
 local barXOffset = 24
 local barYOffset = -8
-local Version,Author,LVersion = "v0.1","Kypos","8.3"
+local Version,Author,LVersion = "v0.2","Kypos","8.3"
 local EDMG = {}
 
 local HKITEM = {
@@ -318,7 +318,8 @@ function Fizz:LoadMenu()
 	AIO.Killsteal:MenuElement({id = "RCC", name = "R on CC", value = true, type = MENU})
 	for i, hero in pairs(GetEnemyHeroes()) do
 	AIO.Killsteal.RCC:MenuElement({id = "UseR"..hero.charName, name = "Use R on: "..hero.charName, value = true})
-	end	AIO.Killsteal:MenuElement({id = "RR", name = "R KS Normal (Prediction)", value = true, type = MENU})
+	end	
+	AIO.Killsteal:MenuElement({id = "RR", name = "R KS Normal (Prediction)", value = true, type = MENU})
 	for i, hero in pairs(GetEnemyHeroes()) do
 	AIO.Killsteal.RR:MenuElement({id = "UseR"..hero.charName, name = "Use R on: "..hero.charName, value = true})
 	end
@@ -815,7 +816,7 @@ function Veigar:Clear()
 	end	
 		local BestPos, BestHit = GetBestCircularFarmPosition(50,112 + 80, qMinions)
 		if BestHit >= AIO.Clear.WHit:Value() and Ready(_W) and (myHero.mana/myHero.maxMana >= AIO.Mana.WMana:Value() / 100 ) then
-			Control.CastSpell(HK_W,BestPos)
+			CastSpell(HK_W,BestPos)
 		end
 	end
 end
@@ -918,7 +919,7 @@ function Veigar:Combo()
     if AIO.Combo.UseE:Value() and target and Ready(_E) then
 	    if EnemyInRange(E.Range) then
 		if AIO.Combo.EMode:Value() == 1 then
-			Control.CastSpell(HK_E, Vector(target:GetPrediction(E.speed,E.delay))-Vector(Vector(target:GetPrediction(E.speed,E.delay))-Vector(myHero.pos)):Normalized()*270)
+			CastSpell(HK_E, Vector(target:GetPrediction(E.speed,E.delay))-Vector(Vector(target:GetPrediction(E.speed,E.delay))-Vector(myHero.pos)):Normalized()*270)
 		elseif AIO.Combo.EMode:Value() == 2 then
 			CastSpell(HK_E,target)
 		end
@@ -1289,7 +1290,7 @@ function Nasus:ComboE()
 	local target = CurrentTarget(650)
     if target == nil then return end
 		if EnemyInRange(650) and target then 
-			    Control.CastSpell(HK_E, target)
+			    CastSpell(HK_E, target)
             end
 		end
 end
@@ -1309,7 +1310,7 @@ function Nasus:HarassE()
     if target == nil then return end
 	if AIO.Harass.UseE:Value() and target and Ready(_E) then
 		if EnemyInRange(650) and target then 
-			    Control.CastSpell(HK_E, target)
+			    CastSpell(HK_E, target)
 		    end
 	    end
     end
@@ -1659,7 +1660,7 @@ function Ahri:QWE()
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 		    end
 	    end
     end
@@ -1668,7 +1669,7 @@ function Ahri:QWE()
 		if EnemyInRange(W.Range) then 
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, W.ignorecol, W.Type )
 		    if (HitChance > 0 ) and Ready(_W) then
-			    Control.CastSpell(HK_W,castpos)
+			    CastSpell(HK_W,castpos)
             end
 		end
 	end
@@ -1679,7 +1680,7 @@ function Ahri:QWE()
 	    if EnemyInRange(E.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range,E.Speed, myHero.pos, not E.ignorecol, E.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_E,castpos)
+			    CastSpell(HK_E,castpos)
 		    end
 	    end
     end
@@ -1692,7 +1693,7 @@ local target = CurrentTarget(E.Range)
 	    if EnemyInRange(E.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range,E.Speed, myHero.pos, not E.ignorecol, E.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_E,castpos)
+			    CastSpell(HK_E,castpos)
 		    end
 	    end
     end
@@ -1702,7 +1703,7 @@ local target = CurrentTarget(E.Range)
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 		    end
 	    end
     end
@@ -1711,7 +1712,7 @@ local target = CurrentTarget(E.Range)
 		if EnemyInRange(W.Range) then 
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, W.ignorecol, W.Type )
 		    if (HitChance > 0 ) and Ready(_W) then
-			    Control.CastSpell(HK_W,castpos)
+			    CastSpell(HK_W,castpos)
             end
 		end
 	end
@@ -1724,7 +1725,7 @@ local target = CurrentTarget(E.Range)
 	    if EnemyInRange(E.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range,E.Speed, myHero.pos, not E.ignorecol, E.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_E,castpos)
+			    CastSpell(HK_E,castpos)
 		    end
 	    end
     end
@@ -1733,7 +1734,7 @@ local target = CurrentTarget(E.Range)
     if target == nil then return end
 	if AIO.Combo.UseW:Value() and target and Ready(_W) then
 		if EnemyInRange(W.Range) then 
-			    Control.CastSpell(HK_W,castpos)
+			    CastSpell(HK_W,castpos)
             end
 	end
 	
@@ -1743,7 +1744,7 @@ local target = CurrentTarget(E.Range)
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 		    end
 	    end
     end
@@ -1756,7 +1757,7 @@ function Ahri:Harass()
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 		    end
 	    end
     end
@@ -1765,7 +1766,7 @@ function Ahri:Harass()
 		if EnemyInRange(W.Range) then 
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, W.ignorecol, W.Type )
 		    if (HitChance > 0 ) and Ready(_W) then
-			    Control.CastSpell(HK_W,castpos)
+			    CastSpell(HK_W,castpos)
             end
 		end
 	end
@@ -1814,7 +1815,7 @@ function Ahri:KillstealQ()
 		   	local Qdamage = Ahri:QDMG()
 			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
 			if (HitChance > 0 ) and not target.dead then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -1864,7 +1865,7 @@ function Ahri:SpellonCCE()
 			local level = myHero:GetSpellData(_E).level	
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range,E.Speed, myHero.pos, not E.ignorecol, E.Type )
 			if (HitChance > 0 ) and ImmobileEnemy then
-			    Control.CastSpell(HK_E,castpos)
+			    CastSpell(HK_E,castpos)
 				end
 			end
 		end
@@ -1880,7 +1881,7 @@ function Ahri:SpellonCCQ()
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
 			if ImmobileEnemy then
 			if (HitChance > 0 ) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -2185,7 +2186,7 @@ local target = CurrentTarget(750)
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -2198,7 +2199,7 @@ local target = CurrentTarget(Q.Range)
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -2220,7 +2221,7 @@ function Zed:Clear()
 		if Ready(_Q) then 
 			if AIO.Clear.UseQ:Value() and minion then
 				if ValidTarget(minion, 900) and myHero.pos:DistanceTo(minion.pos) < 900 then
-					Control.CastSpell(HK_Q, minion)
+					CastSpell(HK_Q, minion)
 					end
 				end
 			end
@@ -2284,10 +2285,10 @@ function Zed:KillstealQ()
 		   	local Qdamage = Zed:QDMG()
 			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
 			if (HitChance > 0 ) and Ready(_Q) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				else if EnemyInRange(900) then 
 				if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
-				Control.CastSpell(HK_Q,castpos)
+				CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -2329,7 +2330,7 @@ function Zed:ClearQCount(range)
 	if minion and minion.team == 300 or minion.team ~= myHero.team then
 		if Ready(_Q) then 
 			if AIO.Clear.UseQ:Value() and minion and minion:GetCollision(45, 902, 0.15) - 1 >= AIO.Clear.QClear:Value() then
-					Control.CastSpell(HK_Q, minion)
+					CastSpell(HK_Q, minion)
     end
   end
 end
@@ -3002,11 +3003,11 @@ function Yasuo:getminion()
 		local perto = math.huge
 		for i = 1, Game.MinionCount() do
 			local minion = Game.Minion(i)
-			if ValidTarget(minion, 475) then
+			if minion and minion.team == 300 or minion.team ~= myHero.team then
 				local rato = GetDistance(myHero.pos, mousePos)
 				local jogador = GetDistance(Yasuo:dashpos(minion), mousePos)
 				local enemigo = GetDistance(Yasuo:dashpos(minion), myHero.pos)
-				if jogador < rato and enemigo < perto and not HasBuff(minion, "YasuoDashWrapper") then
+				if jogador < rato and enemigo < perto and not HasBuff(minion, "YasuoDashWrapper") and GetDistance(myHero.pos, minion.pos) < 475 then
 					gebest = minion
 					perto = enemigo
 				end
@@ -3024,7 +3025,7 @@ function Yasuo:Combo()
 		    if (HitChance > 0 ) then
 			    Control.CastSpell(HK_Q,castpos)
 		    else if myHero.pos:DistanceTo(target.pos) < 900 and HasBuff(myHero, "YasuoQ3W") then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -3052,7 +3053,7 @@ function Yasuo:Harass()
 		    if (HitChance > 0 ) then
 			    Control.CastSpell(HK_Q,target)
 				else if myHero.pos:DistanceTo(target.pos) < 900 and HasBuff(myHero, "YasuoQ3W") then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 		    end
 	    end
     end
@@ -3068,6 +3069,52 @@ function Yasuo:Clear()
 			if AIO.Clear.UseQ:Value() and minion then
 				if ValidTarget(minion, 475) and myHero.pos:DistanceTo(minion.pos) < 475 and not HasBuff(myHero, "YasuoQ3W") then
 					Control.CastSpell(HK_Q, minion)
+					end
+				end
+			end
+		end
+	end
+	for i = 1, Game.MinionCount() do
+	local minion = Game.Minion(i)
+	if minion and minion.team == 300 or minion.name == "SRU_Razorbeak" or minion.name == "SRU_Red" or minion.name == "SRU_Blue" or minion.name == "SRU_Krug" or minion.name == "SRU_Gromp" or minion.name == "SRU_MurkWolf" or minion.name == "SRU_KrugMini" or minion.name == "SRU_Dragon_Fire" or minion.name == "SRU_Dragon_Air" or minion.name == "SRU_Dragon_Earth" or minion.name == "SRU_Dragon_Water" or minion.name == "SRU_Dragon_Elder" or minion.name == "SRU_Baron" or minion.name == "SRU_Herald" then
+		if Ready(_Q) then 
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(minion, Q3.Delay , Q3.Width, Q3.Range ,Q3.Speed, myHero.pos, Q3.ignorecol, Q3.Type )
+			if AIO.Clear.UseQ:Value() and minion then
+				if ValidTarget(minion, 900) and myHero.pos:DistanceTo(minion.pos) < 900 then
+					if (HitChance > 0 ) and HasBuff(myHero, "YasuoQ3W") then
+					Control.CastSpell(HK_Q, castpos)
+					end
+				end
+			end
+		end
+	end
+	end
+	end
+
+-- SRU_Razorbeak
+-- SRU_Red
+-- SRU_Krug
+-- SRU_Gromp
+-- SRU_Blue
+-- SRU_MurkWolf
+-- SRU_KrugMini
+-- SRU_MiniKrugB
+-- Sru_Crab
+-- SRU_Dragon_Fire
+-- SRU_Dragon_Air
+-- SRU_Dragon_Earth
+-- SRU_Dragon_Water
+-- SRU_Dragon_Elder
+
+	
+function Yasuo:ClearE()
+	for i = 1, Game.MinionCount() do
+	local minion = Game.Minion(i)
+	if minion and minion.team == 300 or minion.team ~= myHero.team then
+		if Ready(_E) then 
+			if AIO.Clear.UseE:Value() and minion then
+				if ValidTarget(minion, 475) and myHero.pos:DistanceTo(minion.pos) < 475 and not HasBuff(minion, "YasuoDashWrapper") then
+					Control.CastSpell(HK_E, minion)
 					end
 				end
 			end
@@ -3149,7 +3196,7 @@ function Yasuo:KillstealQ()
 			    Control.CastSpell(HK_Q,castpos)
 				else if EnemyInRange(900) then 
 				if Qdamage >= HpPred(target,1) + target.hpRegen * 1 and HasBuff(myHero, "YasuoQ3W") then
-				Control.CastSpell(HK_Q,castpos)
+				CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -3200,7 +3247,7 @@ function Yasuo:SpellonCCQ3()
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
 			if ImmobileEnemy then
 			if (HitChance > 0 ) and HasBuff(myHero, "YasuoQ3W") then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -3589,11 +3636,10 @@ if AIO.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, 450, AIO.Drawings
 			local barPos = hero.hpBar
 			if not hero.dead and hero.pos2D.onScreen and barPos.onScreen and hero.visible then
 				local QDamage = (Ready(_Q) and getdmg("Q",hero,myHero) or 0)
-				local WDamage = (Ready(_W) and getdmg("W",hero,myHero) or 0)
 				local EDamage = (Ready(_E) and getdmg("E",hero,myHero) or 0)
 				local RDamage = (Ready(_R) and getdmg("R",hero,myHero) or 0)
 				local AA = (getdmg("AA",hero,myHero) or 0)
-				local damage = QDamage + WDamage + EDamage + RDamage + AA
+				local damage = QDamage + EDamage + RDamage + AA
 				if damage > hero.health then
 					Draw.Text("killable", 24, hero.pos2D.x, hero.pos2D.y,Draw.Color(0xFF00FF00))
 					
@@ -3760,7 +3806,7 @@ function Thresh:Combo()
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) and target.distance <= AIO.Combo.MinQ:Value() and Game.Timer() - myHero:GetSpellData(_Q).castTime >= AIO.Combo.DelayQ:Value() and myHero.pos:DistanceTo(target.pos) > 350 then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 		    end
 	    end
     end
@@ -3788,7 +3834,7 @@ function Thresh:KillstealQ()
 		   	local Qdamage = Thresh:QDMG()
 			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
 			if (HitChance > 0 ) and Ready(_Q) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -3820,7 +3866,7 @@ function Thresh:SpellonCCQ()
 			local ImmobileEnemy = self:IsImmobileTarget(target)
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 			if ImmobileEnemy and (HitChance > 0 ) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -4116,32 +4162,6 @@ function Teemo:KillstealQ()
 end
 end
 end
-
-function Teemo:KillstealW()
-	local target = CurrentTarget(1300)
-	if target == nil then return end
-	if AIO.Killsteal.UseW:Value() and target and Ready(_W) then
-		   	local Wdamage = Teemo:WDMG()
-			if Wdamage >= HpPred(target,1) + target.hpRegen * 1 then
-			if myHero.pos:DistanceTo(target.pos) < 220 and HasBuff(myHero, "orianaghostself") then
-			    Control.CastSpell(HK_W)
-			else if ball and ball:DistanceTo(target.pos) < 150 then
-				Control.CastSpell(HK_W)
-			else if myHero.pos:DistanceTo(target.pos) < 220 and not HasBuff(myHero, "orianaghostself") then
-			    Control.CastSpell(HK_E, myHero)
-			else for i = 1,Game.HeroCount()  do
-			local hero = Game.Hero(i)
-				if hero.isAlly and HasBuff(hero, "orianaghost") then
-				Control.CastSpell(HK_W)
-			else if not ball then return end
-				end
-			end
-		end
-	end
-	end
-	end
-	end
-	end
 
 function Teemo:Zhonya()
     local target = CurrentTarget(500)
@@ -5719,7 +5739,7 @@ function Kalista:KillstealQ()
 		   	local Qdamage = Kalista:QDMG()
 			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
 			if (HitChance > 0 ) and Ready(_Q) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -5736,7 +5756,7 @@ function Kalista:SpellonCCQ()
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 			if ImmobileEnemy then
 			if (HitChance > 0 ) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -6053,7 +6073,7 @@ function KogMaw:Flee()
 	    if EnemyInRange(1200) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1200, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6065,7 +6085,7 @@ function KogMaw:Flee()
 	    if EnemyInRange(1500) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1500, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6078,7 +6098,7 @@ function KogMaw:Flee()
 	    if EnemyInRange(1800) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1800, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6093,7 +6113,7 @@ function KogMaw:Combo()
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
 				if myHero.pos:DistanceTo(target.pos) < Q.Range then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -6106,7 +6126,7 @@ end
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range, E.Speed, myHero.pos, E.ignorecol, E.Type )
 		    if (HitChance > 0 ) then
 				if myHero.pos:DistanceTo(target.pos) < E.Range then
-			    Control.CastSpell(HK_E,castpos)
+			    CastSpell(HK_E,castpos)
 				end
 			end
 		end
@@ -6121,7 +6141,7 @@ function KogMaw:Harass()
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
 				if myHero.pos:DistanceTo(target.pos) < Q.Range then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -6158,7 +6178,7 @@ function KogMaw:Lasthit()
 			local Qdamage = (({80,130,180,230,280})[level] + 0.50 * myHero.ap)
 			if myHero.pos:DistanceTo(minion.pos) < 1175 and AIO.Lasthit.UseQ:Value() and minion.isEnemy then
 				if Qdamage >= minion.health then
-				Control.CastSpell(HK_Q,minion.pos)
+				CastSpell(HK_Q,minion.pos)
 				end
 			end
 		end
@@ -6187,10 +6207,10 @@ function KogMaw:KillstealQ()
 		   	local Qdamage = KogMaw:QDMG()
 			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
 			if (HitChance > 0 ) and Ready(_Q) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				else if EnemyInRange(900) then 
 				if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
-				Control.CastSpell(HK_Q,castpos)
+				CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -6211,7 +6231,7 @@ if myHero:GetSpellData(_R).level == 0 then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1200, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) then
 				if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6225,7 +6245,7 @@ if myHero:GetSpellData(_R).level == 0 then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1500, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) then
 				if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6239,7 +6259,7 @@ if myHero:GetSpellData(_R).level == 0 then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1800, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) then
 				if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6257,7 +6277,7 @@ function KogMaw:SpellonCCQ()
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 			if ImmobileEnemy then
 			if (HitChance > 0 ) then
-			    Control.CastSpell(HK_Q,castpos)
+			    CastSpell(HK_Q,castpos)
 				end
 			end
 		end
@@ -6275,7 +6295,7 @@ if myHero:GetSpellData(_R).level == 0 then
 	    if EnemyInRange(1200) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1200, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) and ImmobileEnemy then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6288,7 +6308,7 @@ if myHero:GetSpellData(_R).level == 0 then
 	    if EnemyInRange(1500) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1500, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) and ImmobileEnemy then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6302,7 +6322,7 @@ if myHero:GetSpellData(_R).level == 0 then
 	    if EnemyInRange(1800) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1800, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) and ImmobileEnemy then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6322,7 +6342,7 @@ if myHero:GetSpellData(_R).level == 0 then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1200, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) and ImmobileEnemy then
 				if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6337,7 +6357,7 @@ if myHero:GetSpellData(_R).level == 0 then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1500, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) and ImmobileEnemy then
 				if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6353,7 +6373,7 @@ if myHero:GetSpellData(_R).level == 0 then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, 1800, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		    if (HitChance > 0 ) and ImmobileEnemy then
 				if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
-			    Control.CastSpell(HK_R,castpos)
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
@@ -6369,7 +6389,7 @@ function KogMaw:ClearECount(range)
 	if minion and minion.team == 300 or minion.team ~= myHero.team then
 		if Ready(_E) then 
 			if AIO.Clear.UseE:Value() and minion and minion:GetCollision(120, 1200, 0.25) - 1 >= AIO.Clear.EClear:Value() then
-					Control.CastSpell(HK_E, minion)
+					CastSpell(HK_E, minion)
     end
   end
 end
@@ -6395,6 +6415,7 @@ function Leblanc:LoadMenu()
 		
 	AIO:MenuElement({id = "Harass", name = "Harass", type = MENU})
 	AIO.Harass:MenuElement({id = "UseWQ", name = "WQ", value = false, key = string.byte("6")})
+	AIO.Harass:MenuElement({id = "UseWo", name = "W Only", value = false, key = string.byte("V")})
 	AIO.Harass:MenuElement({id = "AutoQ", name = "Auto Q", toggle = true, value = false, toggle, true, key = string.byte("Capslock")})
 	
 	AIO:MenuElement({id = "Clear", name = "Clear", type = MENU})
@@ -6489,6 +6510,7 @@ function Leblanc:Tick()
 	--E key/Burst
 	if AIO.Flee.BurstEREQW:Value() then
 	self:BurstEREQW()
+	self:BurstEQW()
 	end
 	if AIO.Flee.EKey:Value() and Ready(HK_E) then
 	self:EKey()
@@ -6498,6 +6520,7 @@ function Leblanc:Tick()
 		self:KillstealE()
 		self:KillstealQPassive()
 		self:ECC()
+		self:UseWo()
 	
 end
 
@@ -6568,7 +6591,7 @@ local target = CurrentTarget(E.Range)
     if target and Ready(_E) and EnemyInRange(E.Range) then
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Range, E.Speed, E.Width, myHero.pos, not E.ignorecol, E.Type )
 			if (HitChance > 0 ) and target then
-			    Control.CastSpell(HK_E, castpos)
+			    CastSpell(HK_E, castpos)
 		    end
 	    end
 
@@ -6576,7 +6599,7 @@ local target = CurrentTarget(W.Range)
     if target == nil then return end
     if target and Ready(_W) then
 	    if EnemyInRange(W.Range) and HasBuff(target, "leblanceroot") or HasBuff(target, "LeblancPMark") then
-			    Control.CastSpell(HK_W, target)
+			    CastSpell(HK_W, target)
 		    end
 	    end
 		
@@ -6584,7 +6607,7 @@ local target = CurrentTarget(W.Range)
     if target == nil then return end
     if target and Ready(_Q) then
 	    if EnemyInRange(Q.Range) then
-			    Control.CastSpell(HK_Q, target)
+			    CastSpell(HK_Q, target)
 		    end
 	    end
 end
@@ -6597,7 +6620,7 @@ local target = CurrentTarget(W.Range)
     if target and Ready(_W) and EnemyInRange(W.Range) then
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Radius, W.Range, W.Speed, myHero.pos, W.ignorecol, W.Type )
 		if (HitChance > 0 ) then
-			    Control.CastSpell(HK_W, castpos)
+			    CastSpell(HK_W, castpos)
 		    end
 	    end
 
@@ -6607,7 +6630,7 @@ local target = CurrentTarget(E.Range)
     if target and Ready(_E) and EnemyInRange(E.Range) then
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Radius, E.Range, E.Speed, myHero.pos, not E.ignorecol, E.Type )
 			if (HitChance > 0 ) and target then
-			    Control.CastSpell(HK_E, castpos)
+			    CastSpell(HK_E, castpos)
 		    end
 	    end
 		
@@ -6665,7 +6688,7 @@ local target = CurrentTarget(W.Range)
     if target and Ready(_W) and EnemyInRange(W.Range) then
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Radius, W.Range, W.Speed, myHero.pos, W.ignorecol, W.Type )
 		if (HitChance > 0 ) then
-			    Control.CastSpell(HK_W, castpos)
+			    CastSpell(HK_W, castpos)
 		if Ready(_Q) then
 	    if EnemyInRange(Q.Range) and HasBuff(target, "LeblancPMark") then
 			DelayAction(function()
@@ -6676,6 +6699,19 @@ local target = CurrentTarget(W.Range)
 		    end
 	    end
 		end
+end
+
+function Leblanc:UseWo()
+     if AIO.Harass.UseWo:Value() then
+local target = CurrentTarget(W.Range)
+    if target == nil then return end
+    if target and Ready(_W) and EnemyInRange(W.Range) then
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Radius, W.Range, W.Speed, myHero.pos, W.ignorecol, W.Type )
+		if (HitChance > 0 ) then
+			    CastSpell(HK_W, castpos)
+end
+end
+end
 end
 
 function Leblanc:AutoQ()
@@ -6826,7 +6862,8 @@ end
 function Leblanc:BurstEREQW()
 local target = CurrentTarget(E.Range)
     if target == nil then return end
-    if target and Ready(_E) and EnemyInRange(E.Range) then
+	if Ready(_R) then
+    if target and Ready(_E) and Ready(_W) and Ready(_Q) and EnemyInRange(E.Range) then
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Radius, E.Range, E.Speed, myHero.pos, not E.ignorecol, E.Type )
 			if (HitChance > 0 ) and target then
 			    CastSpell(HK_E, castpos)
@@ -6864,6 +6901,44 @@ if not Ready(_E) then
 	    end
 
 if not Ready(_Q) then
+local target = CurrentTarget(W.Range)
+    if target == nil then return end
+    if target and Ready(_W) and EnemyInRange(W.Range) then
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Radius, W.Range, W.Speed, myHero.pos, W.ignorecol, W.Type )
+		if (HitChance > 0 ) then
+			    Control.CastSpell(HK_W, castpos)
+		    end
+	    end
+end
+end
+end
+
+function Leblanc:BurstEQW()
+local target = CurrentTarget(E.Range)
+    if target == nil then return end
+	if not Ready(_R) then
+    if target and Ready(_E) and Ready(_W) and Ready(_Q) and EnemyInRange(E.Range) then
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Radius, E.Range, E.Speed, myHero.pos, not E.ignorecol, E.Type )
+			if (HitChance > 0 ) and target then
+			    CastSpell(HK_E, castpos)
+		    end
+	    end
+		
+if not Ready(_E) and Ready(_W) and Ready(_Q) then
+	local target = CurrentTarget(Q.Range)
+    if target == nil then return end
+    if target then
+	    if EnemyInRange(Q.Range) then
+			-- Control.CastSpell(HK_Q, target)
+			if Ready(_Q) then
+				Control.CastSpell(HK_Q, target)
+		    end
+	    end
+	    end
+	    end
+	    end
+
+if not Ready(_Q) and Ready(_W) then
 local target = CurrentTarget(W.Range)
     if target == nil then return end
     if target and Ready(_W) and EnemyInRange(W.Range) then
@@ -9832,8 +9907,8 @@ function Lux:LoadSpells()
 
 	Q = {Range = 1150, Width = 80, Delay = 0.50, Speed = 1200, Collision = true, aoe = false, Type = "line"}
 	W = {Range = 1075, Width = 150, Delay = 0.25, Speed = 1200, Collision = false, aoe = false, Type = "line"}
-	E = {Range = 1000, Width = 0, Delay = 0.50, Speed = 1300, Collision = false, aoe = true, Type = "circular", radius = 350}
-	R = {Range = 3340, Width = 190, Delay = 1.30, Speed = 3000, Collision = false, aoe = false, Type = "line"}
+	E = {Range = 1100, Width = 0, Delay = 0.50, Speed = 1300, Collision = false, aoe = true, Type = "circular", radius = 350}
+	R = {Range = 3340, Width = 190, Delay = 0.55, Speed = 3000, Collision = false, aoe = false, Type = "line"}
 
 end
 
@@ -10040,7 +10115,7 @@ function Lux:Draw()
 if AIO.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, 1175 , AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
 if AIO.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, 1100, AIO.Drawings.E.Width:Value(), AIO.Drawings.E.Color:Value()) end
 if AIO.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, 3340, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
-if AIO.Drawings.R.Minimap:Value() then Draw.CircleMinimap(h, 3340, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
+if AIO.Drawings.R.Minimap:Value() then Draw.CircleMinimap(myHero.pos, 3340, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
 
 			if AIO.Drawings.DrawDamage:Value() then
 		for i, hero in pairs(GetEnemyHeroes()) do
@@ -10759,15 +10834,7 @@ end
 end
 end
 
--- SRU_Razorbeak
--- SRU_Red
--- SRU_Krug
--- SRU_Gromp
--- SRU_Blue
--- SRU_
--- SRU_
--- SRU_
--- SRU_
+
 
 function Nidalee:Lasthit()
 	if Ready(_Q) and AIO.Lasthit.UseQ:Value() then
@@ -10930,7 +10997,7 @@ class "Annie"
 function Annie:LoadSpells()
 
 	Q = {Range = 625, Delay = 0, Speed = 1400, Collision = false, aoe = false, Type = "line"}
-	W = {Range = 625, Delay = 0.25, Speed = 0, Collision = false, aoe = false, Type = "line"}
+	W = {Range = 600, Delay = 0.25, Speed = 0, Collision = false, aoe = false, Type = "line"}
 	R = {Range = 600, Width = 150, Delay = 00, Speed = 1300, Collision = false, aoe = true, Type = "circular"}
 
 end
@@ -10940,8 +11007,14 @@ function Annie:LoadMenu()
 	AIO:MenuElement({id = "Combo", name = "Combo", type = MENU})
 	AIO.Combo:MenuElement({id = "UseQ", name = "Q", value = true})
 	AIO.Combo:MenuElement({id = "UseW", name = "W", value = true})
-	AIO.Combo:MenuElement({id = "UseR", name = "R", value = true})
-	AIO.Combo:MenuElement({id = "MinR", name = "Min enemies to R", value = 2, min = 1, max = 5})
+	AIO.Combo:MenuElement({id = "SaveStun", name = "Save Stun Key", toggle = true, value = false, toggle, true, key = string.byte("Capslock")})
+	AIO.Combo:MenuElement({id = "StunPreference", name = "Stun Preference", type = MENU})
+	AIO.Combo.StunPreference:MenuElement({id = "blank", type = SPACE , name = "I think its better to only check one option."})
+	AIO.Combo.StunPreference:MenuElement({id = "UseR", name = "R", value = true})
+	AIO.Combo.StunPreference:MenuElement({id = "UseW", name = "W", value = true})
+	AIO.Combo.StunPreference:MenuElement({id = "blank", type = SPACE , name = ""})
+	AIO.Combo.StunPreference:MenuElement({id = "UseStun", name = "Only R if has stun?", value = true})
+	AIO.Combo.StunPreference:MenuElement({id = "Min", name = "Min enemies to Stun", value = 2, min = 1, max = 5})
 	AIO.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
 		
 	AIO:MenuElement({id = "Harass", name = "Harass", type = MENU})
@@ -10951,10 +11024,14 @@ function Annie:LoadMenu()
 	
 	AIO:MenuElement({id = "Lasthit", name = "Lasthit", type = MENU})
 	AIO.Lasthit:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Lasthit:MenuElement({id = "SaveQStun", name = "Save Stun?", value = true})
 	AIO.Lasthit:MenuElement({id = "lasthitActive", name = "Lasthit key", key = string.byte("X")})
 	
 	AIO:MenuElement({id = "SemiR", name = "R Key", type = MENU})
-	AIO.SemiR:MenuElement({id = "UseR", name = "R", key = string.byte("T")})
+	AIO.SemiR:MenuElement({id = "UseR", name = "R", key = string.byte("T")})	
+	
+	AIO:MenuElement({id = "Misc", name = "Misc", type = MENU})
+	AIO.Misc:MenuElement({id = "AutoStackStun", name = "Auto stack Stun", value = true})
 	
 	AIO:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
 	AIO.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true})
@@ -10983,14 +11060,9 @@ function Annie:LoadMenu()
     AIO.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	--W
 	AIO.Drawings:MenuElement({id = "W", name = "Draw W range", type = MENU})
-    AIO.Drawings.W:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.W:MenuElement({id = "Enabled", name = "Enabled", value = false})       
     AIO.Drawings.W:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
     AIO.Drawings.W:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
-	--R
-	AIO.Drawings:MenuElement({id = "R", name = "Draw R range", type = MENU})
-    AIO.Drawings.R:MenuElement({id = "Enabled", name = "Enabled", value = true})       
-    AIO.Drawings.R:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    AIO.Drawings.R:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	
 	AIO.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})	
@@ -11030,6 +11102,8 @@ function Annie:Tick()
 	if AIO.Combo.comboActive:Value() then
 		self:ComboQ()
 		self:ComboW()
+		self:UseRMin()
+		self:UseWMin()
 		self:Items()
 	end		
 	if AIO.Lasthit.lasthitActive:Value() then
@@ -11040,12 +11114,16 @@ function Annie:Tick()
 		self:KillstealR()
 		self:SemiR()
 		self:Zhonya()	
+		self:AutoStackStun()	
 end
 
 function Annie:Draw()
+if AIO.Combo.SaveStun:Value() == true then
+			local textPos = myHero.pos:To2D()
+			Draw.Text("Save Stun ON", 20, textPos.x - 25, textPos.y + 40, Draw.Color(200, 229, 28, 21))
+			end
 if AIO.Drawings.Q.Enabled:Value() and Ready(_Q) then Draw.Circle(myHero.pos, Q.Range, AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
 if AIO.Drawings.W.Enabled:Value() and Ready(_W) then Draw.Circle(myHero.pos, W.Range, AIO.Drawings.W.Width:Value(), AIO.Drawings.W.Color:Value()) end
-if AIO.Drawings.R.Enabled:Value() and Ready(_R) then Draw.Circle(myHero.pos, R.Range, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
 			if AIO.Drawings.DrawDamage:Value() then
 		for i, hero in pairs(GetEnemyHeroes()) do
 			local barPos = hero.hpBar
@@ -11068,17 +11146,6 @@ if AIO.Drawings.R.Enabled:Value() and Ready(_R) then Draw.Circle(myHero.pos, R.R
 			end
 		end	
 	end
-    if Ready(_R) then
-			local target = CurrentTarget(R.Range)
-			if target == nil then return end
-			local temppred
-			local collisionc = R.ignorecol
-			
-			if (TPred) then
-				local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range,R.Speed, myHero.pos, R.ignorecol, R.Type )
-				Draw.Circle(castpos, 60, 3, Draw.Color(200, 255, 255, 255))
-			end
-		end
 end
 
 function Annie:IsImmobileTarget(unit)
@@ -11096,7 +11163,8 @@ function Annie:ComboQ()
     local target = CurrentTarget(Q.Range)
     if target == nil then return end
     if AIO.Combo.UseQ:Value() and target and Ready(_Q) then
-	    if EnemyInRange(Q.Range) then
+		if self:HasStun() and AIO.Combo.SaveStun:Value() then return end
+		if EnemyInRange(Q.Range) then
 			CastSpell(HK_Q, target)
 		    end
 	    end
@@ -11106,10 +11174,11 @@ function Annie:ComboW()
     local target = CurrentTarget(W.Range)
     if target == nil then return end
     if AIO.Combo.UseW:Value() and target and Ready(_W) then
-	    if EnemyInRange(Q.Range) then
+	if self:HasStun() and AIO.Combo.SaveStun:Value() then return end
+	if EnemyInRange(W.Range) then
 			CastSpell(HK_W, target)
-		    end
 	    end
+end
 end
 
 function Annie:HarassQ()
@@ -11134,7 +11203,7 @@ end
 	
 function Annie:QDMG()
     local level = myHero:GetSpellData(_Q).level
-    local qdamage = ({80, 115, 150, 185, 220})[level] + 0.8 * myHero.ap
+    local qdamage = ({55, 92, 130, 170, 220})[level] + 0.8 * myHero.ap
 	return qdamage
 end
 
@@ -11146,7 +11215,7 @@ end
 
 function Annie:RDMG()
     local level = myHero:GetSpellData(_R).level
-    local rdamage = (({150 / 275 / 400})[level] + 0.65 * myHero.ap)
+    local rdamage = (({150,275,400})[level] + 0.65 * myHero.ap)
 	return rdamage
 end
 
@@ -11162,6 +11231,12 @@ function Annie:KillstealQ()
 			end
 		end
 	end
+	
+function Annie:AutoStackStun()
+if Ready(_E) and AIO.Misc.AutoStackStun:Value() and not self:HasStun() then
+	Control.CastSpell(HK_E)
+				end
+			end
 
 function Annie:LHQ()
 for i = 1, Game.MinionCount() do
@@ -11171,11 +11246,13 @@ for i = 1, Game.MinionCount() do
 		   	local Qdamage = Annie:QDMG()
 			if Qdamage >= HpPred(minion,1) + minion.hpRegen * 1 and minion.pos:DistanceTo(myHero.pos) < 625 then
 			    CastSpell(HK_Q, minion)
+			elseif AIO.Lasthit.SaveQStun:Value() == false and self:HasStun() and Qdamage >= HpPred(minion,1) + minion.hpRegen * 1 and minion.pos:DistanceTo(myHero.pos) < 625 then
+			    CastSpell(HK_Q, minion)
+			elseif AIO.Lasthit.SaveQStun:Value() == true and self:HasStun() then return end
 				end
 				end
 			end
 		end
-	end
 	
 function Annie:KillstealW()
 	local target = CurrentTarget(W.Range)
@@ -11261,8 +11338,19 @@ end
 function Annie:EnemiesAround(pos, range)
     local Count = 0
     for i = 1, Game.HeroCount() do
-        local e = Game.Hero(i)
-        if e and e.team ~= myHero.team and not e.dead and e.pos:DistanceTo(pos, e.pos) <= 290 then
+        local hero = Game.Hero(i)
+        if hero and hero.isEnemy and not hero.dead and hero.pos:DistanceTo(pos, hero.pos) <= 290 then
+            Count = Count + 1
+        end
+    end
+    return Count
+end
+
+function Annie:EnemiesforW(pos, range)
+    local Count = 0
+    for i = 1, Game.HeroCount() do
+        local hero = Game.Hero(i)
+        if hero and hero.isEnemy and not hero.dead and hero.pos:DistanceTo(pos, hero.pos) <= 600 then
             Count = Count + 1
         end
     end
@@ -11272,14 +11360,867 @@ end
 function Annie:UseRMin()
     local target = CurrentTarget(R.Range)
 	if target == nil then return end
-	if AIO.Combo.UseR:Value() and Ready(_R) and not HasBuff(myHero, "infernalguardianburning") then
-		if EnemyInRange(Q.Range) then 
-			if target and self:EnemiesAround(target.pos, 290) >= AIO.Combo.MinR:Value() then
+	if AIO.Combo.StunPreference.UseR:Value() and Ready(_R) and not HasBuff(myHero, "infernalguardianburning") then
+		if EnemyInRange(R.Range) then 
+			if target and self:EnemiesAround(target.pos, 290) >= AIO.Combo.StunPreference.Min:Value() and AIO.Combo.StunPreference.UseStun:Value() == true and self:HasStun() then
+			    CastSpell(HK_R, target)
+			elseif target and self:EnemiesAround(target.pos, 290) >= AIO.Combo.StunPreference.Min:Value() and AIO.Combo.StunPreference.UseStun:Value() == false and not self:HasStun() or self:HasStun() then
 			    CastSpell(HK_R, target)
 				end
 			end
 		end
 	end
+function Annie:UseWMin()
+    local target = CurrentTarget(W.Range)
+	if target == nil then return end
+	if AIO.Combo.StunPreference.UseW:Value() and Ready(_W) and not HasBuff(myHero, "infernalguardianburning") then
+		if EnemyInRange(W.Range) then 
+			if target and self:EnemiesforW(myHero.pos, 625) >= AIO.Combo.StunPreference.Min:Value() and self:HasStun() then
+			    CastSpell(HK_W, target)
+				end
+			end
+		end
+	end
+	
+function Annie:HasStun()
+	if myHero.hudAmmo == myHero.hudMaxAmmo then
+		return true
+	end
+	return false
+end
+
+class "Akali"
+
+
+function Akali:LoadSpells()
+
+	Q = {Range = 600, Width = 0, Delay = 0, Speed = 1000, Collision = false, aoe = false, Type = "line"}
+	W = {Range = 270, Width = 0, Delay = 0, Speed = 0, Collision = false, aoe = false, Type = "line"}
+	E = {Range = 300, Width = 0, Delay = 0, Speed = 0, Collision = false, aoe = true, Type = "line"}
+	R = {Range = 700, Width = 0, Delay = 0, Speed = 2200, Collision = false, aoe = false, Type = "line"}
+
+end
+
+function Akali:LoadMenu()
+	AIO = MenuElement({type = MENU, id = "Akali", name = "Kypo's AIO: Akali", leftIcon = AIOIcon})
+	AIO:MenuElement({id = "Combo", name = "Combo", type = MENU})
+	AIO.Combo:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Combo:MenuElement({id = "UseE", name = "E", value = true})
+	AIO.Combo:MenuElement({id = "UseRO", name = "R only if has Q?", value = true})
+	AIO.Combo:MenuElement({id = "UseR", name = "R", value = true})
+	AIO.Combo:MenuElement({id = "KeepAmmo", name = "Ammo to keep:", value = 1, min = 0, max = 3, step = 1})
+	AIO.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
+
+	AIO:MenuElement({id = "Clear", name = "Clear", type = MENU})
+	AIO.Clear:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Clear:MenuElement({id = "UseE", name = "E", value = true})
+	AIO.Clear:MenuElement({id = "ECount", name = "Use E on X minions", value = 3, min = 1, max = 5, step = 1})
+	AIO.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
+	
+	AIO:MenuElement({id = "Lasthit", name = "Lasthit", type = MENU})
+	AIO.Lasthit:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Lasthit:MenuElement({id = "UseE", name = "E", value = true})
+	AIO.Lasthit:MenuElement({id = "lasthitActive", name = "Lasthit key", key = string.byte("X")})
+	
+	AIO:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
+	AIO.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Killsteal:MenuElement({id = "UseE", name = "E", value = true})
+	AIO.Killsteal:MenuElement({id = "UseR", name = "R", value = true})
+	AIO.Killsteal:MenuElement({id = "UseQR", name = "Smart QR KS", value = true})
+	AIO.Killsteal:MenuElement({id = "UseGB", name = "Smart Gunblade", value = true})
+	AIO.Killsteal:MenuElement({id = "Ignite", name = "Ignite", value = true})	
+	
+	AIO:MenuElement({id = "Items", name = "Items", type = MENU})
+    AIO.Items:MenuElement({id = "Zhonya", name = "Zhonya", value = true})
+    AIO.Items:MenuElement({id = "ZhonyaHp", name = "Min HP",value=15,min=1,max=30})
+	AIO.Items:MenuElement({id = "Protobelt", name = "Hextech Protobelt", value = true})
+	AIO.Items:MenuElement({id = "GLP", name = "Hextech GLP", value = true})
+	AIO.Items:MenuElement({id = "Gunblade", name = "Hextech Gunblade", value = true})	
+	
+	AIO:MenuElement({id = "Drawings", name = "Drawings", type = MENU})
+	--Q
+	AIO.Drawings:MenuElement({id = "Q", name = "Draw Q Range", type = MENU})
+    AIO.Drawings.Q:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.Q:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
+	--W
+	AIO.Drawings:MenuElement({id = "W", name = "Draw W Range for walls", type = MENU})
+    AIO.Drawings.W:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.W:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.W:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})		
+	--E
+	AIO.Drawings:MenuElement({id = "E", name = "Draw E Range", type = MENU})
+    AIO.Drawings.E:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.E:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
+	--R 
+	AIO.Drawings:MenuElement({id = "R", name = "Draw R Range", type = MENU})
+    AIO.Drawings.R:MenuElement({id = "Enabled", name = "Normal", value = true})       
+    AIO.Drawings.R:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.R:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
+	
+	AIO.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
+    AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
+		
+	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = "by "..Author.. ""})
+end
+
+
+function Akali:__init()
+	
+	self:LoadSpells()
+	self:LoadMenu()
+	Callback.Add("Tick", function() self:Tick() end)
+	Callback.Add("Draw", function() self:Draw() end)
+	local orbwalkername = ""
+	if _G.SDK then
+		orbwalkername = "IC'S orbwalker"		
+	elseif _G.EOW then
+		orbwalkername = "EOW"	
+	elseif _G.GOS then
+		orbwalkername = "Noddy orbwalker"
+	else
+		orbwalkername = "Orbwalker not found"
+	end
+end
+
+function Akali:Tick()
+        if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true or ExtLibEvade and ExtLibEvade.Evading == true then return end
+	if AIO.Combo.comboActive:Value() then
+		self:Combo()
+		self:ComboE()
+		self:ComboR()
+		self:Items()
+	end
+	if AIO.Clear.clearActive:Value() then
+		self:Clear()
+		self:ClearQ()
+		self:ClearEJng()
+	end
+	if AIO.Lasthit.lasthitActive:Value() then
+		self:Lasthit()
+		self:LasthitE()
+	end					
+		self:KillstealQ()
+		self:KillstealE()
+		self:KillstealR()
+		self:KSGunblade()
+		self:KillstealRSmart()
+		self:Zhonya()
+	end
+
+
+function Akali:Draw()
+if AIO.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, Q.Range, AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
+if AIO.Drawings.W.Enabled:Value() then Draw.Circle(myHero.pos, W.Range, AIO.Drawings.W.Width:Value(), AIO.Drawings.W.Color:Value()) end
+if AIO.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, E.Range, AIO.Drawings.E.Width:Value(), AIO.Drawings.E.Color:Value()) end
+if AIO.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, R.Range, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
+
+			if AIO.Drawings.DrawDamage:Value() then
+		for i, hero in pairs(GetEnemyHeroes()) do
+			local barPos = hero.hpBar
+			if not hero.dead and hero.pos2D.onScreen and barPos.onScreen and hero.visible then
+				local QDamage = (Ready(_Q) and getdmg("Q",hero,myHero) or 0)
+				local EDamage = (Ready(_E) and getdmg("E",hero,myHero) or 0)
+				local RDamage = (Ready(_R) and getdmg("R",hero,myHero) or 0)
+				local Passive = (self:PassiveDMG())
+				local damage = QDamage + RDamage + EDamage + Passive
+				if damage > hero.health then
+					Draw.Text("KILLABLE", 24, hero.pos2D.x, hero.pos2D.y,Draw.Color(200,255,255,255))
+				else
+					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
+					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
+					local xPosStart = barPos.x + barXOffset + percentHealthAfterDamage * 100
+					Draw.Line(xPosStart, barPos.y + barYOffset, xPosEnd, barPos.y + barYOffset, 10, AIO.Drawings.HPColor:Value())
+				end
+				end
+				end
+end
+end
+
+function Akali:IsImmobileTarget(unit)
+		if unit == nil then return false end
+		for i = 0, unit.buffCount do
+			local buff = unit:GetBuff(i)
+			if buff and (buff.type == 5 or buff.type == 11 or buff.type == 24 or buff.type == 28 or buff.type == 21 or buff.type == 29) and buff.count > 0 then
+				return true
+			end
+		end
+	return false	
+end
+
+function Akali:Combo()
+    local target = CurrentTarget(Q.Range)
+    if target == nil then return end
+    if AIO.Combo.UseQ:Value() and target and Ready(_Q) then
+	    if EnemyInRange(Q.Range) then
+			Control.CastSpell(HK_Q, target)
+		end
+	end
+end
+
+function Akali:ComboE()
+    local target = CurrentTarget(E.Range)
+    if target == nil then return end
+    if AIO.Combo.UseE:Value() and target and Ready(_E) then
+	    if EnemyInRange(E.Range) then
+			Control.CastSpell(HK_E)
+		end
+	end
+end
+
+function Akali:ComboR()
+    local target = CurrentTarget(R.Range)
+    if target == nil then return end
+    if AIO.Combo.UseR:Value() and target and Ready(_R) then
+	    if EnemyInRange(R.Range) and AIO.Combo.UseRO:Value() == true and HasBuff(target, "AkaliMota") and myHero:GetSpellData(3).ammo > AIO.Combo.KeepAmmo:Value() then
+			Control.CastSpell(HK_R, target)	    
+		elseif EnemyInRange(R.Range) and AIO.Combo.UseRO:Value() == false and not HasBuff(target, "AkaliMota") and myHero:GetSpellData(3).ammo > AIO.Combo.KeepAmmo:Value() then
+			Control.CastSpell(HK_R, target)
+		end
+	end
+end
+
+function Akali:Clear()
+	if Ready(_R) then
+	local eMinions = {}
+	local mobs = {}
+	
+	for i = 1, Game.MinionCount() do
+		local minion = Game.Minion(i)
+		if  ValidTarget(minion,300)  then
+			if minion.team == 300 then
+				mobs[#mobs+1] = minion
+			elseif minion.isEnemy  then
+				eMinions[#eMinions+1] = minion
+			end	
+	end	
+		local BestPos, BestHit = GetBestCircularFarmPosition(300, 300, eMinions)
+		if BestHit >= AIO.Clear.ECount:Value() and AIO.Clear.UseE:Value() then
+		Control.CastSpell(HK_E)
+		end
+	end
+end
+end
+
+function Akali:ClearQ()
+	if Ready(_Q) and AIO.Clear.UseQ:Value() then
+  		for i = 1, Game.MinionCount() do
+			local minion = Game.Minion(i)
+			if myHero.pos:DistanceTo(minion.pos) < Q.Range and minion.isEnemy and not minion.dead then
+			    Control.CastSpell(HK_Q,minion)
+				end
+			end
+		end
+	end
+function Akali:ClearEJng()
+	if Ready(_E) and AIO.Clear.UseE:Value() then
+  		for i = 1, Game.MinionCount() do
+			local minion = Game.Minion(i)
+			if myHero.pos:DistanceTo(minion.pos) < E.Range and minion.isEnemy and not minion.dead then
+			    Control.CastSpell(HK_E)
+				end
+			end
+		end
+	end
+
+function Akali:Lasthit()
+	if Ready(_Q) and AIO.Lasthit.UseQ:Value() then
+  		for i = 1, Game.MinionCount() do
+			local minion = Game.Minion(i)
+			local Qdamage = Akali:QDMGLasthit()
+			if myHero.pos:DistanceTo(minion.pos) < Q.Range and AIO.Lasthit.UseQ:Value() and minion.isEnemy or minion.team == 300 and not minion.dead then
+				if Qdamage >= HpPred(minion,1) then
+			    Control.CastSpell(HK_Q,minion)
+				end
+			end
+		end
+	end
+end
+
+function Akali:LasthitE()
+	if Ready(_E) and AIO.Lasthit.UseE:Value() then
+  		for i = 1, Game.MinionCount() do
+			local minion = Game.Minion(i)
+			local Edamage = Akali:EDMG()
+			if myHero.pos:DistanceTo(minion.pos) < E.Range and AIO.Lasthit.UseE:Value() and minion.isEnemy or minion.team == 300 and not minion.dead then
+				if Edamage >= HpPred(minion,1) then
+			    Control.CastSpell(HK_E)
+				end
+			end
+		end
+	end
+end
+
+function Akali:QDMG()
+    local level = myHero:GetSpellData(_Q).level
+    local qdamage = ({35, 55, 75, 95, 115})[level] + 0.4 * myHero.ap
+    local qdamage2 = ({45, 70, 95, 120, 145})[level] + 0.5 * myHero.ap
+	return qdamage + qdamage2
+end
+
+function Akali:QRDMG()
+    local level = myHero:GetSpellData(_Q).level
+	local levelr = myHero:GetSpellData(_R).level
+    local qdamage = ({35, 55, 75, 95, 115})[level] + 0.4 * myHero.ap
+    local qdamage2 = ({45, 70, 95, 120, 145})[level] + 0.5 * myHero.ap
+	local rdamage = ({50, 100, 150})[levelr] + 0.35 * myHero.ap
+	return qdamage + qdamage2 + rdamage
+end
+
+function Akali:QDMGLasthit()
+    local level = myHero:GetSpellData(_Q).level
+    local qdamage = ({35, 55, 75, 95, 115})[level] + 0.4 * myHero.ap
+	return qdamage
+end
+
+function Akali:EDMG()
+    local level = myHero:GetSpellData(_Q).level
+    local qdamage = ({70, 100, 130, 160, 190})[level] + 0.6 * myHero.ap + 0.8 * myHero.bonusDamage
+	return qdamage
+end
+
+function Akali:RDMG()
+    local level = myHero:GetSpellData(_R).level
+    local rdamage = ({50, 100, 150})[level] + 0.35 * myHero.ap
+	return rdamage
+end
+
+function Akali:PassiveDMG()
+    local level = myHero.levelData.lvl
+    local pdamage = ({10,12,14,16,18,20,22,24,26,28,30,40,50,60,70,80,90,100})[level] + 0.50 * myHero.bonusDamage + 0.75 * myHero.ap
+	return pdamage
+end
+
+function Akali:GunbladeDMG()
+    local level = myHero.levelData.lvl
+    local gbdamage = ({175,180,184,189,193,198,203,207,212,216,221,225,230,235,239,244,248,253})[level] + 0.30 * myHero.ap
+	return gbdamage
+end
+
+function Akali:KillstealQ()
+	local target = CurrentTarget(Q.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseQ:Value() and target and Ready(_Q) then
+		if EnemyInRange(Q.Range) then 
+		   	local Qdamage = Akali:QDMG()
+			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < Q.Range then
+			    Control.CastSpell(HK_Q,target)
+				end
+			end
+		end
+	end
+end
+
+function Akali:KillstealE()
+	local target = CurrentTarget(E.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseE:Value() and target and Ready(_E) then
+		if EnemyInRange(E.Range) then 
+		   	local Edamage = Akali:EDMG()
+			if Edamage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < E.Range then
+			    Control.CastSpell(HK_E)
+				end
+			end
+		end
+	end
+end
+
+function Akali:KillstealR()
+	local target = CurrentTarget(R.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseR:Value() and target and Ready(_R) then
+		if EnemyInRange(R.Range) then 
+		   	local Rdamage = Akali:RDMG()
+			if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < 700 and Ready(_R) and myHero:GetSpellData(3).ammo > 0 then
+			    Control.CastSpell(HK_R,target)
+				end
+			end
+		end
+	end
+end
+
+function Akali:KSGunblade()
+	local target = CurrentTarget(700)
+	if target == nil then return end
+	if AIO.Killsteal.UseGB:Value() and target then
+		local Gunblade = GetInventorySlotItem(3146)
+		local dmg = Akali:GunbladeDMG()
+		if Gunblade and EnemyInRange(700 ) and dmg >= HpPred(target,1) + target.hpRegen * 1 then
+			Control.CastSpell(HKITEM[Gunblade], target)
+			end
+		end
+	end
+
+function Akali:KillstealRSmart()
+	local target = CurrentTarget(R.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseQR:Value() and target and Ready(_R) then
+		if EnemyInRange(R.Range) then 
+		   	local damage = Akali:QRDMG()
+			if damage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < 700 and Ready(_R) and HasBuff(target, "AkaliMota") and myHero:GetSpellData(3).ammo > 0 then
+			    Control.CastSpell(HK_R,target)
+				end
+			end
+		end
+	end
+end
+
+function Akali:Zhonya()
+    local target = CurrentTarget(500)
+	if target == nil then return end
+		if AIO.Items.Zhonya:Value() and myHero.pos:DistanceTo(target.pos) < 500 and myHero.health<=myHero.maxHealth * AIO.Items.ZhonyaHp:Value()/100 and not HasBuff(myHero, "camouflagestealth") then
+		local Zhonya = GetInventorySlotItem(3157) or GetInventorySlotItem(2421)
+		if Zhonya then
+			Control.CastSpell(HKITEM[Zhonya])
+		end
+	end
+	end
+function Akali:Items()	
+	local target = CurrentTarget(700)
+	if target == nil then return end
+		if AIO.Items.Protobelt:Value() then
+		local protobelt = GetInventorySlotItem(3152)
+		if protobelt and EnemyInRange(700) then
+			Control.CastSpell(HKITEM[protobelt], target)
+		end
+	end
+	
+	local target = CurrentTarget(800)
+	if target == nil then return end
+		if AIO.Items.GLP:Value() then
+		local GLP = GetInventorySlotItem(3030)
+		if GLP and EnemyInRange(800) then
+			Control.CastSpell(HKITEM[GLP], target)
+		end
+	end
+	
+	local target = CurrentTarget(700)
+	if target == nil then return end
+		if AIO.Items.Gunblade:Value() then
+		local Gunblade = GetInventorySlotItem(3146) or GetInventorySlotItem(3144)
+		if Gunblade and EnemyInRange(700 ) then
+			Control.CastSpell(HKITEM[Gunblade], target)
+		end
+	end
+	
+end
+
+function Akali:IgniteSteal()
+	local target = CurrentTarget(600)
+	if target == nil then return end
+	if AIO.Killsteal.Ignite:Value() and target then
+		if EnemyInRange(600) then 
+			local IgniteDMG = 50+20*myHero.levelData.lvl
+			if IgniteDMG >= HpPred(target,1) + target.hpRegen * 2 then
+        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and self:IsReady(SUMMONER_1) then
+            Control.CastSpell(HK_SUMMONER_1, target)
+        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and self:IsReady(SUMMONER_2) then
+            Control.CastSpell(HK_SUMMONER_2, target)				
+			end
+			end
+		end
+	end
+	end
+	
+class "Caitlyn"
+
+
+function Caitlyn:LoadSpells()
+
+	Q = {Range = 1250, Width = 60, Delay = 0.90, Speed = 2200, Collision = false, aoe = false, Type = "line"}
+	W = {Range = 800, Width = 0, Delay = 0.75, Speed = 1450, Collision = false, aoe = false, Type = "line"}
+	E = {Range = 750, Width = 70, Delay = 0, Speed = 1600, Collision = false, aoe = true, Type = "line"}
+	R = {Range = 2000, Width = 0, Delay = 0, Speed = 1500, Collision = false, aoe = false, Type = "line"}
+
+end
+
+function Caitlyn:LoadMenu()
+	AIO = MenuElement({type = MENU, id = "Caitlyn", name = "Kypo's AIO: Caitlyn", leftIcon = AIOIcon})
+	AIO:MenuElement({id = "Combo", name = "Combo", type = MENU})
+	AIO.Combo:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Combo:MenuElement({id = "UseW", name = "W Key", key = string.byte("T")})
+	AIO.Combo:MenuElement({id = "UseE", name = "E", value = true})	
+	AIO.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
+
+	AIO:MenuElement({id = "Clear", name = "Clear", type = MENU})
+	AIO.Clear:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Clear:MenuElement({id = "QClear", name = "Use Q If Hit X Minion ", value = 4, min = 2, max = 6, step = 1})	
+	AIO.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
+	
+	AIO:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
+	AIO.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Killsteal:MenuElement({id = "UseE", name = "E", value = true})
+	AIO.Killsteal:MenuElement({id = "RR", name = "R on:", value = true, type = MENU})
+	for i, hero in pairs(GetEnemyHeroes()) do
+	AIO.Killsteal.RR:MenuElement({id = "UseR"..hero.charName, name = "Use R on: "..hero.charName, value = true})
+	end
+	
+	AIO:MenuElement({id = "CC", name = "CC", type = MENU})
+	AIO.CC:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.CC:MenuElement({id = "UseW", name = "W", value = true})
+	
+	AIO:MenuElement({id = "Misc", name = "Misc", type = MENU})
+	AIO.Misc:MenuElement({id = "gg", name = "Auto AA champion if killable with Headshot", value = true})
+	AIO.Misc:MenuElement({id = "Wput", name = "Auto W if slowed with Net [E]", value = true})
+	AIO.Misc:MenuElement({id = "AAonW", name = "Auto AA if slowed has trap [info]", value = true, tooltip = "Only if enemy is above your E range"})
+
+	AIO:MenuElement({id = "Drawings", name = "Drawings", type = MENU})
+	--Q
+	AIO.Drawings:MenuElement({id = "Q", name = "Draw Q Range", type = MENU})
+    AIO.Drawings.Q:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.Q:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
+	--E
+	AIO.Drawings:MenuElement({id = "E", name = "Draw E Range", type = MENU})
+    AIO.Drawings.E:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.E:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
+	--R 
+	AIO.Drawings:MenuElement({id = "R", name = "Draw R Range", type = MENU})
+    AIO.Drawings.R:MenuElement({id = "Enabled", name = "Normal", value = true})       
+    AIO.Drawings.R:MenuElement({id = "EnabledM", name = "Minimap", value = true})       
+    AIO.Drawings.R:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.R:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
+	
+	AIO.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
+    AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
+		
+	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	
+	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = "by "..Author.. ""})
+end
+
+
+function Caitlyn:__init()
+	
+	self:LoadSpells()
+	self:LoadMenu()
+	Callback.Add("Tick", function() self:Tick() end)
+	Callback.Add("Draw", function() self:Draw() end)
+	local orbwalkername = ""
+	if _G.SDK then
+		orbwalkername = "IC'S orbwalker"		
+	elseif _G.EOW then
+		orbwalkername = "EOW"	
+	elseif _G.GOS then
+		orbwalkername = "Noddy orbwalker"
+	else
+		orbwalkername = "Orbwalker not found"
+	end
+end
+
+function Caitlyn:Tick()
+        if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true or ExtLibEvade and ExtLibEvade.Evading == true then return end
+	if AIO.Combo.comboActive:Value() then
+		self:Combo()
+		self:ComboE()
+	end
+	if AIO.Clear.clearActive:Value() then
+		self:Clear()
+	end		
+	if AIO.Combo.UseW:Value() then
+		self:WKey()
+	end				
+		self:KillstealQ()
+		self:KillstealE()
+		self:KillstealR()
+		self:GG()
+		self:WonE()
+		self:AAonW()
+		self:CCw()
+		self:CCq()
+	end
+
+function Caitlyn:CCw()
+    local target = CurrentTarget(W.Range)
+	if target == nil then return end
+	if AIO.CC.UseW:Value() and Ready(_W) then
+		if EnemyInRange(W.Range) then 
+			local ImmobileEnemy = self:IsImmobileTarget(target)
+			if target and ImmobileEnemy then
+			CastSpell(HK_W, target)
+				end
+			end
+		end
+	end
+	
+function Caitlyn:CCq()
+    local target = CurrentTarget(Q.Range)
+	if target == nil then return end
+	if AIO.CC.UseQ:Value() and Ready(_Q) then
+		if EnemyInRange(Q.Range) then 
+			local ImmobileEnemy = self:IsImmobileTarget(target)
+			if target and ImmobileEnemy then
+			CastSpell(HK_Q, target)
+				end
+			end
+		end
+	end
+	
+function Caitlyn:RDrawnormal()
+	if myHero:GetSpellData(_R).level == 0 then
+		return
+	elseif not Ready(_R) then goto continue
+	::continue:: elseif Ready(_R) and myHero:GetSpellData(_R).level == 1 then
+		return Draw.Circle(myHero.pos, 2000, AIO.Drawings.R.Width:Value(),  AIO.Drawings.R.Color:Value())
+	elseif Ready(_R) and myHero:GetSpellData(_R).level == 2 then
+		return Draw.Circle(myHero.pos, 2500, AIO.Drawings.R.Width:Value(),  AIO.Drawings.R.Color:Value())
+	elseif Ready(_R) and myHero:GetSpellData(_R).level == 3 then
+		return Draw.Circle(myHero.pos, 3000, AIO.Drawings.R.Width:Value(),  AIO.Drawings.R.Color:Value()) 
+	end
+end
+
+function Caitlyn:RDrawmm()
+	if myHero:GetSpellData(_R).level == 0 then
+		return
+	elseif not Ready(_R) then goto continue
+	::continue:: elseif Ready(_R) and myHero:GetSpellData(_R).level == 1 then
+		return Draw.CircleMinimap(myHero.pos, 2000, AIO.Drawings.R.Width:Value(),  AIO.Drawings.R.Color:Value())
+	elseif Ready(_R) and myHero:GetSpellData(_R).level == 2 then
+		return Draw.CircleMinimap(myHero.pos, 2500, AIO.Drawings.R.Width:Value(),  AIO.Drawings.R.Color:Value())
+	elseif Ready(_R) and myHero:GetSpellData(_R).level == 3 then
+		return Draw.CircleMinimap(myHero.pos, 3000, AIO.Drawings.R.Width:Value(),  AIO.Drawings.R.Color:Value()) 
+	end
+end
+
+
+function Caitlyn:RRange()
+	if myHero:GetSpellData(_R).level == 0 then
+		return
+	elseif Ready(_R) and myHero:GetSpellData(_R).level == 1 then
+		return 2000
+	elseif Ready(_R) and myHero:GetSpellData(_R).level == 2 then
+		return 2500
+	elseif Ready(_R) and myHero:GetSpellData(_R).level == 3 then
+		return 3000
+	end
+end
+function Caitlyn:GG()
+	local target = CurrentTarget(650)
+	if target == nil then return end
+	if target then
+	if AIO.Misc.gg:Value() then
+	local passiveie = myHero.totalDamage + 1.70 * myHero.bonusDamage - target.armor
+	local passive = myHero.totalDamage + 1.50 * myHero.bonusDamage - target.armor
+		if EnemyInRange(650) then 
+			if passiveie >= HpPred(target,1) + target.hpRegen * 1 and HasBuff(myHero, "caitlynheadshot") then
+				Control.Attack(target)
+			elseif passive >= HpPred(target,1) + target.hpRegen * 1 and HasBuff(myHero, "caitlynheadshot") then
+				Control.Attack(target)
+			if not HasBuff(myHero, "caitlynheadshot") then return end
+				end
+			end
+		end
+	end
+	end
+	
+function Caitlyn:AAonW()
+    local target = CurrentTarget(1250)
+    if target == nil then return end
+    if AIO.Misc.AAonW:Value() and target then
+	    if EnemyInRange(1250) and HasBuff(target, "caitlynyordletrapinternal") and GetDistance(myHero.pos,target.pos) > E.Range then
+			Control.Attack(target)
+		end
+	end
+end
+
+function Caitlyn:Draw()
+if AIO.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, Q.Range, AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
+if AIO.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, E.Range, AIO.Drawings.E.Width:Value(), AIO.Drawings.E.Color:Value()) end
+if AIO.Drawings.R.Enabled:Value() then self:RDrawnormal() end
+if AIO.Drawings.R.EnabledM:Value() then self:RDrawmm() end
+
+			if AIO.Drawings.DrawDamage:Value() then
+		for i, hero in pairs(GetEnemyHeroes()) do
+			local barPos = hero.hpBar
+			if not hero.dead and hero.pos2D.onScreen and barPos.onScreen and hero.visible then
+				local QDamage = (Ready(_Q) and getdmg("Q",hero,myHero) or 0)
+				local EDamage = (Ready(_E) and getdmg("E",hero,myHero) or 0)
+				local RDamage = (Ready(_R) and getdmg("R",hero,myHero) or 0)
+				local AA = (getdmg("AA",hero,myHero) or 0)
+				local damage = QDamage + RDamage + EDamage + AA
+				local passive = myHero.totalDamage + 1.50 * myHero.bonusDamage - hero.armor
+				local passiveie = myHero.totalDamage + 1.70 * myHero.bonusDamage - hero.armor
+				if damage > hero.health then
+					Draw.Text("KILLABLE", 24, hero.pos2D.x, hero.pos2D.y,Draw.Color(200,255,255,255))
+				if passive > hero.health and HasBuff(myHero, "caitlynheadshot") then
+				Draw.Text("HS KILLABLE", 25, hero.pos2D.x - 67, hero.pos2D.y - 180,Draw.Color(200, 255, 87, 51))
+				if passiveie > hero.health and HasBuff(myHero, "caitlynheadshot") then
+				Draw.Text("HS KILLABLE", 25, hero.pos2D.x - 67, hero.pos2D.y - 180,Draw.Color(200, 255, 87, 51))
+				else
+					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
+					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
+					local xPosStart = barPos.x + barXOffset + percentHealthAfterDamage * 100
+					Draw.Line(xPosStart, barPos.y + barYOffset, xPosEnd, barPos.y + barYOffset, 10, AIO.Drawings.HPColor:Value())
+				end
+				end
+				end
+end
+end
+end
+end
+
+function Caitlyn:IsImmobileTarget(unit)
+		if unit == nil then return false end
+		for i = 0, unit.buffCount do
+			local buff = unit:GetBuff(i)
+			if buff and (buff.type == 5 or buff.type == 11 or buff.type == 24 or buff.type == 28 or buff.type == 21 or buff.type == 29) and not buff.name == "caitlynyordletrapinternal" and buff.count > 0 then
+				return true
+			end
+		end
+	return false	
+end
+
+function Caitlyn:Combo()
+    local target = CurrentTarget(Q.Range)
+    if target == nil then return end
+	local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
+    if AIO.Combo.UseQ:Value() and target and Ready(_Q) then
+	    if EnemyInRange(Q.Range) and (HitChance > 1 ) then
+			CastSpell(HK_Q, castpos)
+		end
+	end
+end
+
+function Caitlyn:WKey()
+    local target = CurrentTarget(W.Range)
+    if target == nil then return end
+	local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, W.ignorecol, W.Type )
+    if AIO.Combo.UseW:Value() and target and Ready(_W) then
+	    if EnemyInRange(W.Range) and (HitChance > 0 ) then
+			CastSpell(HK_W, castpos)
+		end
+	end
+end
+
+function Caitlyn:WonE()
+    local target = CurrentTarget(W.Range)
+    if target == nil then return end
+	local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, W.ignorecol, W.Type )
+    if AIO.Misc.Wput:Value() and target and Ready(_W) then
+	    if EnemyInRange(W.Range) and (HitChance > 0 ) and HasBuff(target, "CaitlynEntrapmentMissile") then
+			CastSpell(HK_W, castpos)
+		end
+	end
+end
+
+function Caitlyn:ComboE()
+    local target = CurrentTarget(300)
+    if target == nil then return end
+	local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range,E.Speed, myHero.pos, not E.ignorecol, E.Type )
+    if AIO.Combo.UseE:Value() and target and Ready(_E) then
+	    if EnemyInRange(300) and (HitChance > 0 ) and GetDistance(myHero.pos,target.pos) < 300 then
+			Control.CastSpell(HK_E, castpos)
+		end
+	end
+end
+
+function Caitlyn:KillstealR()
+    local target = CurrentTarget(R.Range)
+    if target == nil then return end
+    if AIO.Killsteal.R["RR"..hero.charName]:Value() and target and Ready(_R) then
+	    if EnemyInRange(R.Range) then 			
+		local Rdamage = Caitlyn:RDMG()
+		if Rdamage >= HpPred(target,1) then
+			Control.CastSpell(HK_R, target)
+		end
+	end
+end
+end
+
+function Caitlyn:Clear()
+	for i = 1, Game.MinionCount() do
+	local minion = Game.Minion(i)
+	if minion and minion.team == 300 or minion.team ~= myHero.team then
+		if Ready(_E) then 
+			if AIO.Clear.UseQ:Value() and minion and minion:GetCollision(60, 1250, 0.25) - 1 >= AIO.Clear.QClear:Value() then
+					Control.CastSpell(HK_Q, minion)
+    end
+  end
+end
+end
+end
+
+function Caitlyn:QDMG()
+    local level = myHero:GetSpellData(_Q).level
+    local qdamage = ({30, 70, 110, 150, 190})[level] + ({1.3, 1.4, 1.5, 1.6, 1.7})[level] * myHero.totalDamage
+	return qdamage
+end
+
+function Caitlyn:EDMG()
+    local level = myHero:GetSpellData(_Q).level
+    local qdamage = ({70, 110, 150, 190, 230})[level] + 0.8 * myHero.ap
+	return qdamage
+end
+
+function Caitlyn:hsDMG()
+    local level = myHero:GetSpellData(_Q).level
+    local qdamage = ({70, 110, 150, 190, 230})[level] + 0.8 * myHero.ap
+	return qdamage
+end
+
+function Caitlyn:RDMG()
+    local level = myHero:GetSpellData(_R).level
+    local rdamage = ({250, 475, 700})[level] + 2 * myHero.totalDamage
+	return rdamage
+end
+
+function Caitlyn:KillstealE()
+	local target = CurrentTarget(E.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseE:Value() and target and Ready(_E) then
+		local castpos,HitChance, pos = TPred:GetBestCastPosition(target, E.Delay , E.Width, E.Range,E.Speed, myHero.pos, not E.ignorecol, E.Type )
+		if EnemyInRange(E.Range) then 
+		   	local Edamage = Caitlyn:EDMG()
+			if Edamage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < E.Range and (HitChance > 0 ) then
+			    Control.CastSpell(HK_E, castpos)
+				end
+			end
+		end
+	end
+end
+
+function Caitlyn:KillstealQ()
+	local target = CurrentTarget(Q.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseQ:Value() and target and Ready(_Q) then
+		local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
+		if EnemyInRange(Q.Range) then 
+		   	local Qdamage = Caitlyn:QDMG()
+			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < Q.Range and (HitChance > 0 ) then
+			    Control.CastSpell(HK_Q, castpos)
+				end
+			end
+		end
+	end
+end
+
+function Caitlyn:KillstealR()
+	local target = CurrentTarget(R.Range)
+	if target == nil then return end
+	if AIO.Killsteal.RR["UseR"..target.charName]:Value() and target and Ready(_R) then
+		if EnemyInRange(R.Range) then 
+		   	local Rdamage = Caitlyn:RDMG()
+			if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < self:RRange() and Ready(_R) then
+			    Control.CastSpell(HK_R,target)
+				end
+			end
+		end
+	end
+end
 
 
 Callback.Add("Load",function() _G[myHero.charName]() end)
