@@ -972,7 +972,7 @@ end
 
 function Veigar:WDMG()
     local level = myHero:GetSpellData(_R).level
-    local wdamage = (({100,150,200,250,300})[level] + 1.00 * myHero.ap)
+    local wdamage = ({100,150,200,250,300})[level] + 1.00 * myHero.ap
 	return wdamage
 end
 
@@ -2010,9 +2010,9 @@ end
 
 function Zed:Ignite(target)
     if target and GetDistance(myHero.pos, target.pos) <= 600 then
-        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and self:IsReady(SUMMONER_1) then
+        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and Ready(SUMMONER_1) then
             Control.CastSpell(HK_SUMMONER_1, target)
-        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and self:IsReady(SUMMONER_2) then
+        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and Ready(SUMMONER_2) then
             Control.CastSpell(HK_SUMMONER_2, target)
         end
     end
@@ -4052,8 +4052,8 @@ if AIO.Drawings.R.Enabled:Value() then self:RDrawnormal() end
 				local RDamage = (Ready(_R) and getdmg("R",hero,myHero) or 0)
 				local damage = QDamage + RDamage + EDamage
 				if damage > hero.health then
-					Draw.Text("KILLABLE", 24, hero.pos2D.x, hero.pos2D.y,Draw.Color(200,255,255,255))
-				else
+					Draw.Text("KILLABLE", 30, hero.pos2D.x - 50, hero.pos2D.y - 195,Draw.Color(200, 255, 87, 51))				
+					else
 					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
 					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
 					local xPosStart = barPos.x + barXOffset + percentHealthAfterDamage * 100
@@ -4210,9 +4210,9 @@ function Teemo:IgniteSteal()
 		if EnemyInRange(600) then 
 			local IgniteDMG = 50+20*myHero.levelData.lvl
 			if IgniteDMG >= HpPred(target,1) + target.hpRegen * 3 then
-        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and self:IsReady(SUMMONER_1) then
+        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and Ready(SUMMONER_1) then
             Control.CastSpell(HK_SUMMONER_1, target)
-        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and self:IsReady(SUMMONER_2) then
+        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and Ready(SUMMONER_2) then
             Control.CastSpell(HK_SUMMONER_2, target)				
 			end
 			end
@@ -7133,8 +7133,8 @@ end
 				local RDamage = (Ready(_R) and getdmg("R",hero,myHero) or 0)
 				local damage = QDamage + WDamage + RDamage + EDamage
 				if damage > hero.health then
-					Draw.Text("KILLABLE", 24, hero.pos2D.x, hero.pos2D.y,Draw.Color(200,255,255,255))
-				else
+					Draw.Text("KILLABLE", 30, hero.pos2D.x - 50, hero.pos2D.y - 195,Draw.Color(200, 255, 87, 51))				
+					else
 					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
 					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
 					local xPosStart = barPos.x + barXOffset + percentHealthAfterDamage * 100
@@ -7374,9 +7374,9 @@ function Orianna:IgniteSteal()
 		if EnemyInRange(600) then 
 			local IgniteDMG = 50+20*myHero.levelData.lvl
 			if IgniteDMG >= HpPred(target,1) + target.hpRegen * 3 then
-        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and self:IsReady(SUMMONER_1) then
+        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and Ready(SUMMONER_1) then
             Control.CastSpell(HK_SUMMONER_1, target)
-        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and self:IsReady(SUMMONER_2) then
+        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and Ready(SUMMONER_2) then
             Control.CastSpell(HK_SUMMONER_2, target)				
 			end
 			end
@@ -8271,7 +8271,7 @@ class "Ezreal"
 function Ezreal:LoadSpells()
 
 	Q = {Range = 1150, Width = 80, Delay = 0.25, Speed = 1200, Collision = true, aoe = false, Type = "line"}
-	W = {Range = 1000, Width = 80, Delay = 0.25, Speed = 1200, Collision = false, aoe = false, Type = "line"}
+	W = {Range = 1050, Width = 80, Delay = 0.25, Speed = 1600, Collision = false, aoe = false, Type = "line"}
 	E = {Range = 475, Delay = 0.25}
 	R = {Range = 2000, Width = 160, Delay = 1.35, Speed = 2000, Collision = false, aoe = false, Type = "line"}
 
@@ -8456,7 +8456,7 @@ function Ezreal:IsImmobileTarget(unit)
 function Ezreal:Combo()
     local target = CurrentTarget(Q.Range)
     if target == nil then return end
-    if AIO.Combo.UseQ:Value() and target and Ready(_Q) then
+    if AIO.Combo.UseQ:Value() and target and Ready(_Q) and target.onScreen then
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
@@ -8465,7 +8465,7 @@ function Ezreal:Combo()
 	    end
     end
 
-	if AIO.Combo.UseW:Value() and target and Ready(_W) then
+	if AIO.Combo.UseW:Value() and target and Ready(_W) and target.onScreen then
 		if EnemyInRange(W.Range) then 
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, W.ignorecol, W.Type )
 		    if (HitChance > 0 ) and Ready(_W) then
@@ -8486,7 +8486,7 @@ end
 function Ezreal:Harass()
     local target = CurrentTarget(1150)
     if target == nil then return end
-    if AIO.Harass.UseQ:Value() and target and Ready(_Q) then
+    if AIO.Harass.UseQ:Value() and target and Ready(_Q) and target.onScreen then
 	    if EnemyInRange(Q.Range) then
 		    local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 0 ) then
@@ -8495,7 +8495,7 @@ function Ezreal:Harass()
 	    end
     end
 
-	if AIO.Harass.UseW:Value() and target and Ready(_W) then
+	if AIO.Harass.UseW:Value() and target and Ready(_W) and target.onScreen then
 		if EnemyInRange(W.Range) then 
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, W.ignorecol, W.Type )
 		    if (HitChance > 0 ) and Ready(_W) then
@@ -8558,7 +8558,7 @@ end
 function Ezreal:KillstealQ()
 	local target = CurrentTarget(Q.Range)
 	if target == nil then return end
-	if AIO.Killsteal.UseQ:Value() and target and Ready(_Q) then
+	if AIO.Killsteal.UseQ:Value() and target and Ready(_Q) and target.onScreen then
 		if EnemyInRange(Q.Range) then 
 			local level = myHero:GetSpellData(_Q).level	
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
@@ -8575,7 +8575,7 @@ end
 function Ezreal:KillstealW()
     local target = CurrentTarget(W.Range)
 	if target == nil then return end
-	if AIO.Killsteal.UseW:Value() and target and Ready(_W) then
+	if AIO.Killsteal.UseW:Value() and target and Ready(_W) and target.onScreen then
 		if EnemyInRange(W.Range) then 
 			local level = myHero:GetSpellData(_W).level	
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, W.Delay , W.Width, W.Range,W.Speed, myHero.pos, W.ignorecol, W.Type )
@@ -8592,7 +8592,7 @@ end
 function Ezreal:KillstealR()
     local target = CurrentTarget(2000)
 	if target == nil then return end
-	if AIO.Killsteal.RR["UseR"..target.charName]:Value() and Ready(_R) then
+	if AIO.Killsteal.RR["UseR"..target.charName]:Value() and Ready(_R) and target.onScreen then
 		if EnemyInRange(2000) then 
 			local level = myHero:GetSpellData(_R).level	
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range,R.Speed, myHero.pos, R.ignorecol, R.Type )
@@ -8609,7 +8609,7 @@ end
 function Ezreal:SpellonCCW()
     local target = CurrentTarget(1000)
 	if target == nil then return end
-	if AIO.isCC.UseW:Value() and target and Ready(_W) then
+	if AIO.isCC.UseW:Value() and target and Ready(_W) and target.onScreen then
 	if EnemyInRange(1000) then 
 	local ImmobileEnemy = self:IsImmobileTarget(target)
 			local level = myHero:GetSpellData(_W).level	
@@ -8626,7 +8626,7 @@ end
 function Ezreal:SpellonCCQ()
     local target = CurrentTarget(1150)
 	if target == nil then return end
-	if AIO.isCC.UseQ:Value() and target and Ready(_Q) then
+	if AIO.isCC.UseQ:Value() and target and Ready(_Q) and target.onScreen then
 		if EnemyInRange(1150) then 
 			local ImmobileEnemy = self:IsImmobileTarget(target)
 			local level = myHero:GetSpellData(_Q).level	
@@ -8643,7 +8643,7 @@ end
 function Ezreal:RksCC()
     local target = CurrentTarget(1500)
 	if target == nil then return end
-	if AIO.Killsteal.RCConly["UseR"..target.charName]:Value() and target and Ready(_R) then
+	if AIO.Killsteal.RCConly["UseR"..target.charName]:Value() and target and Ready(_R) and target.onScreen then
 		if EnemyInRange(1500) then 
 			local ImmobileEnemy = self:IsImmobileTarget(target)
 			local level = myHero:GetSpellData(_R).level	
@@ -10733,7 +10733,7 @@ function Nidalee:ClearQ()
 	if AIO.Clear.UseQ:Value() and self:isHuman() and Ready(_Q) then
 		for i = 1, Game.MinionCount() do
 		local minion = Game.Minion(i)
-			if minion.team == 300 or minion.name == "SRU_Krug" then
+			if minion.team == 300 then
 			if minion.pos:DistanceTo(myHero.pos) < 1500 then
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(minion, Q.Delay, Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
 		    if (HitChance > 1 ) and minion.pos2D.onScreen then
@@ -10767,7 +10767,7 @@ if AIO.Clear.UseW:Value() then
 		local minion = Game.Minion(i)
 			if minion.team == 300 then
 			if minion.pos:DistanceTo(myHero.pos) < 900 and self:isHuman() then
-		   local castpos,HitChance, pos = TPred:GetBestCastPosition(minion, 0.70, W.Width, W.Range, W.Speed, myHero.pos, W.ignorecol, W.Type )
+		   local castpos,HitChance, pos = TPred:GetBestCastPosition(minion, 0.60, W.Width, W.Range, W.Speed, myHero.pos, W.ignorecol, W.Type )
 		    if (HitChance > 0 ) and Ready(_W) and AIO.Clear.UseWH:Value() then
 			Control.CastSpell(HK_W,castpos)
 		else if AIO.Clear.UseWH:Value() == false and HasBuff(minion, "NidaleePassiveHunted") and self:isHuman() and Ready(_R) then
@@ -10947,9 +10947,9 @@ function Nidalee:IgniteSteal()
 		if EnemyInRange(600) then 
 			local IgniteDMG = 50+20*myHero.levelData.lvl
 			if IgniteDMG >= HpPred(target,1) + target.hpRegen * 3 then
-        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and self:IsReady(SUMMONER_1) then
+        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and Ready(SUMMONER_1) then
             Control.CastSpell(HK_SUMMONER_1, target)
-        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and self:IsReady(SUMMONER_2) then
+        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and Ready(SUMMONER_2) then
             Control.CastSpell(HK_SUMMONER_2, target)				
 			end
 			end
@@ -11528,8 +11528,8 @@ if AIO.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, R.Range, AIO.Draw
 				local Passive = (self:PassiveDMG())
 				local damage = QDamage + RDamage + EDamage + Passive
 				if damage > hero.health then
-					Draw.Text("KILLABLE", 24, hero.pos2D.x, hero.pos2D.y,Draw.Color(200,255,255,255))
-				else
+					Draw.Text("KILLABLE", 30, hero.pos2D.x - 50, hero.pos2D.y - 195,Draw.Color(200, 255, 87, 51))				
+					else
 					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
 					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
 					local xPosStart = barPos.x + barXOffset + percentHealthAfterDamage * 100
@@ -11819,9 +11819,9 @@ function Akali:IgniteSteal()
 		if EnemyInRange(600) then 
 			local IgniteDMG = 50+20*myHero.levelData.lvl
 			if IgniteDMG >= HpPred(target,1) + target.hpRegen * 2 then
-        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and self:IsReady(SUMMONER_1) then
+        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and Ready(SUMMONER_1) then
             Control.CastSpell(HK_SUMMONER_1, target)
-        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and self:IsReady(SUMMONER_2) then
+        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and Ready(SUMMONER_2) then
             Control.CastSpell(HK_SUMMONER_2, target)				
 			end
 			end
@@ -12052,7 +12052,7 @@ if AIO.Drawings.R.EnabledM:Value() then self:RDrawmm() end
 				local passive = myHero.totalDamage + 1.50 * myHero.bonusDamage - hero.armor
 				local passiveie = myHero.totalDamage + 1.70 * myHero.bonusDamage - hero.armor
 				if damage > hero.health then
-					Draw.Text("KILLABLE", 24, hero.pos2D.x, hero.pos2D.y,Draw.Color(200,255,255,255))
+					Draw.Text("KILLABLE", 30, hero.pos2D.x - 50, hero.pos2D.y - 195,Draw.Color(200, 255, 87, 51))				
 				if passive > hero.health and HasBuff(myHero, "caitlynheadshot") then
 				Draw.Text("HS KILLABLE", 25, hero.pos2D.x - 67, hero.pos2D.y - 180,Draw.Color(200, 255, 87, 51))
 				if passiveie > hero.health and HasBuff(myHero, "caitlynheadshot") then
@@ -12222,5 +12222,355 @@ function Caitlyn:KillstealR()
 	end
 end
 
+class "Azir"
+
+local Soldier = {}
+
+function Azir:LoadSpells()
+
+	Q = {Range = 740, Width = 0, Delay = 0, Speed = 500, Collision = false, aoe = false, Type = "line"}
+	W = {Range = 570, Width = 0, Delay = 0, Speed = 500, Collision = false, aoe = false, Type = "line"}
+	E = {Range = 1100, Width = 0, Delay = 0, Speed = 500, Collision = false, aoe = true, Type = "line"}
+	R = {Range = 250, Width = 0, Delay = 0, Speed = 500, Collision = false, aoe = false, Type = "line"}
+
+end
+
+function Azir:LoadMenu()
+	AIO = MenuElement({type = MENU, id = "Azir", name = "Kypo's AIO: Azir", leftIcon = AIOIcon})
+	AIO:MenuElement({id = "Combo", name = "Combo", type = MENU})
+	AIO.Combo:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Combo:MenuElement({id = "UseW", name = "W", value = true})
+	AIO.Combo:MenuElement({id = "ESet", name = "E Settings", type = MENU})
+	AIO.Combo.ESet:MenuElement({id = "EE", name = "Blah1", value = true})
+	AIO.Combo.ESet:MenuElement({id = "EEE", name = "Blah2", value = true})
+	AIO.Combo:MenuElement({id = "UseR", name = "R", value = true})
+	AIO.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
+
+	AIO:MenuElement({id = "Clear", name = "Clear", type = MENU})
+	AIO.Clear:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Clear:MenuElement({id = "QCount", name = "Use Q on X minions", value = 3, min = 1, max = 5, step = 1})
+	AIO.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
+	
+	AIO:MenuElement({id = "Flee", name = "Flee", type = MENU})
+	AIO.Flee:MenuElement({id = "UseWQ", name = "Insec WQ", key = string.byte("T")})	
+	
+	AIO:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
+	AIO.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Killsteal:MenuElement({id = "UseR", name = "R", value = true})
+	
+	AIO:MenuElement({id = "Items", name = "Items", type = MENU})
+    AIO.Items:MenuElement({id = "Zhonya", name = "Zhonya", value = true})
+    AIO.Items:MenuElement({id = "ZhonyaHp", name = "Min HP",value=15,min=1,max=30})
+	AIO.Items:MenuElement({id = "Protobelt", name = "Hextech Protobelt", value = true})
+	AIO.Items:MenuElement({id = "GLP", name = "Hextech GLP", value = true})
+	AIO.Items:MenuElement({id = "Gunblade", name = "Hextech Gunblade", value = true})	
+	
+	AIO:MenuElement({id = "Drawings", name = "Drawings", type = MENU})
+	--Q
+	AIO.Drawings:MenuElement({id = "Q", name = "Draw Q Range", type = MENU})
+    AIO.Drawings.Q:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.Q:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
+	--W
+	AIO.Drawings:MenuElement({id = "W", name = "Draw W Range", type = MENU})
+    AIO.Drawings.W:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.W:MenuElement({id = "Soldier", name = "Draw Soldier?", value = true})       
+    AIO.Drawings.W:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.W:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})		
+	--E
+	AIO.Drawings:MenuElement({id = "E", name = "Draw E Range", type = MENU})
+    AIO.Drawings.E:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.E:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
+	--R 
+	AIO.Drawings:MenuElement({id = "R", name = "Draw R Range", type = MENU})
+    AIO.Drawings.R:MenuElement({id = "Enabled", name = "Normal", value = true})       
+    AIO.Drawings.R:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.R:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
+	
+	AIO.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
+    AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
+		
+	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = "by "..Author.. ""})
+end
+
+
+function Azir:__init()
+	
+	self:LoadSpells()
+	self:LoadMenu()
+	Callback.Add("Tick", function() self:Tick() end)
+	Callback.Add("Draw", function() self:Draw() end)
+	local orbwalkername = ""
+	if _G.SDK then
+		orbwalkername = "IC'S orbwalker"		
+	elseif _G.EOW then
+		orbwalkername = "EOW"	
+	elseif _G.GOS then
+		orbwalkername = "Noddy orbwalker"
+	else
+		orbwalkername = "Orbwalker not found"
+	end
+end
+
+function Azir:Tick()
+        if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true or ExtLibEvade and ExtLibEvade.Evading == true then return end
+	if AIO.Combo.comboActive:Value() then
+		self:Combo()
+		self:ComboW()
+		-- self:Items()
+	end
+	-- if AIO.Clear.clearActive:Value() then
+		-- self:Clear()
+		-- self:ClearQ()
+		-- self:ClearEJng()
+	-- end
+	-- if AIO.Lasthit.lasthitActive:Value() then
+		-- self:Lasthit()
+		-- self:LasthitE()
+	-- end					
+		-- self:KillstealQ()
+		-- self:KillstealE()
+		-- self:KillstealR()
+		-- self:KSGunblade()
+		-- self:KillstealRSmart()
+		-- self:Zhonya()	
+		SoldierPos()
+	end		
+		
+	
+function SoldierPos()
+		for i = 0, Game.ObjectCount() do
+			local obj = Game.Object(i)
+			if obj and not obj.dead and obj.name:find("Azir_base_W_Sandbib.troy") then
+				Soldier[obj.networkID] = obj
+			end
+		end	
+end
+
+function Azir:Draw()
+if AIO.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, Q.Range, AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
+if AIO.Drawings.W.Enabled:Value() then Draw.Circle(myHero.pos, W.Range, AIO.Drawings.W.Width:Value(), AIO.Drawings.W.Color:Value()) end
+if AIO.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, E.Range, AIO.Drawings.E.Width:Value(), AIO.Drawings.E.Color:Value()) end
+if AIO.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, R.Range, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
+for i, soldier in pairs(Soldier) do
+if soldier and not soldier.dead and AIO.Drawings.W.Soldier:Value() then Draw.Circle(soldier, 280, AIO.Drawings.W.Width:Value(), AIO.Drawings.W.Color:Value()) 
+	elseif soldier and soldier.dead then Soldier[soldier.networkID] = nil 
+	end
+	end
+			if AIO.Drawings.DrawDamage:Value() then
+		for i, hero in pairs(GetEnemyHeroes()) do
+			local barPos = hero.hpBar
+			if not hero.dead and hero.pos2D.onScreen and barPos.onScreen and hero.visible then
+				local QDamage = (Ready(_Q) and getdmg("Q",hero,myHero) or 0)
+				local EDamage = (Ready(_E) and getdmg("E",hero,myHero) or 0)
+				local RDamage = (Ready(_R) and getdmg("R",hero,myHero) or 0)
+				local damage = QDamage + RDamage + EDamage
+				if damage > hero.health then
+					Draw.Text("KILLABLE", 30, hero.pos2D.x - 50, hero.pos2D.y - 195,Draw.Color(200, 255, 87, 51))
+				else
+					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
+					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
+					local xPosStart = barPos.x + barXOffset + percentHealthAfterDamage * 100
+					Draw.Line(xPosStart, barPos.y + barYOffset, xPosEnd, barPos.y + barYOffset, 10, AIO.Drawings.HPColor:Value())
+				end
+				end
+				end
+end
+end
+
+function Azir:IsImmobileTarget(unit)
+		if unit == nil then return false end
+		for i = 0, unit.buffCount do
+			local buff = unit:GetBuff(i)
+			if buff and (buff.type == 5 or buff.type == 11 or buff.type == 24 or buff.type == 28 or buff.type == 21 or buff.type == 29) and buff.count > 0 then
+				return true
+			end
+		end
+	return false	
+end
+
+function Azir:Combo()
+    local target = CurrentTarget(Q.Range)
+    if target == nil then return end
+	for i, soldier in pairs(Soldier) do
+    if AIO.Combo.UseQ:Value() and target and Ready(_Q) and soldier and GetDistance(target.pos, soldier.pos) < Q.Range then
+			Control.CastSpell(HK_Q, target)
+		end
+	end
+	end
+
+function Azir:WQ()
+    local target = CurrentTarget(W.Range)
+    if target == nil then return end
+    if AIO.Combo.UseWQValue() and target and Ready(_W) then
+			pos = myHero.pos + (pos - myHero.pos):Normalized()*(W.Range - 60)
+			CastSpell(HK_W, mousePos)
+			end
+end
+
+function Azir:ComboW()
+    local target = CurrentTarget(E.Range)
+    if target == nil then return end
+    if AIO.Combo.UseW:Value() and target and Ready(_W) and myHero:GetSpellData(1).ammo > 0 then
+	local pos = target:GetPrediction(W.Speed,0.943)
+	pos = myHero.pos + (pos - myHero.pos):Normalized()*(E.Range - 500)
+			Control.CastSpell(HK_W, pos)
+		end
+	end
+
+	-- if isReady(0) and isReady(2) and SyndraMenu.Combo.UseQE:Value() then
+		-- local target = GetTarget(QE.Range)
+		-- if target then
+			-- local pos = target:GetPrediction(QE.Speed,0.943)
+			-- pos = myHero.pos + (pos - myHero.pos):Normalized()*(Q.Range - 65)
+			-- Control.SetCursorPos(pos) 
+			-- Control.KeyDown(HK_Q)
+			-- DelayAction(function() Control.KeyDown(HK_E) Control.KeyUp(HK_Q) Control.KeyUp(HK_E) end, 0.25)
+
+
+
+function Azir:QDMG()
+    local level = myHero:GetSpellData(_Q).level
+    local qdamage = ({70,95,120,145 / 170})[level] + 0.3 * myHero.ap
+	return qdamage + qdamage2
+end
+
+function Azir:RDMG()
+    local level = myHero:GetSpellData(_R).level
+    local rdamage = ({150, 250, 450})[level] + 0.60 * myHero.ap
+	return rdamage
+end
+
+function Azir:KillstealQ()
+	local target = CurrentTarget(Q.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseQ:Value() and target and Ready(_Q) then
+		if EnemyInRange(Q.Range) then 
+		   	local Qdamage = Azir:QDMG()
+			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < Q.Range then
+			    Control.CastSpell(HK_Q,target)
+				end
+			end
+		end
+	end
+end
+
+function Azir:KillstealE()
+	local target = CurrentTarget(E.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseE:Value() and target and Ready(_E) then
+		if EnemyInRange(E.Range) then 
+		   	local Edamage = Azir:EDMG()
+			if Edamage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < E.Range then
+			    Control.CastSpell(HK_E)
+				end
+			end
+		end
+	end
+end
+
+function Azir:KillstealR()
+	local target = CurrentTarget(R.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseR:Value() and target and Ready(_R) then
+		if EnemyInRange(R.Range) then 
+		   	local Rdamage = Azir:RDMG()
+			if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < 700 and Ready(_R) and myHero:GetSpellData(3).ammo > 0 then
+			    Control.CastSpell(HK_R,target)
+				end
+			end
+		end
+	end
+end
+
+function Azir:KSGunblade()
+	local target = CurrentTarget(700)
+	if target == nil then return end
+	if AIO.Killsteal.UseGB:Value() and target then
+		local Gunblade = GetInventorySlotItem(3146)
+		local dmg = Azir:GunbladeDMG()
+		if Gunblade and EnemyInRange(700 ) and dmg >= HpPred(target,1) + target.hpRegen * 1 then
+			Control.CastSpell(HKITEM[Gunblade], target)
+			end
+		end
+	end
+
+function Azir:KillstealRSmart()
+	local target = CurrentTarget(R.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseQR:Value() and target and Ready(_R) then
+		if EnemyInRange(R.Range) then 
+		   	local damage = Azir:QRDMG()
+			if damage >= HpPred(target,1) + target.hpRegen * 1 then
+			if target.pos:DistanceTo(myHero.pos) < 700 and Ready(_R) and HasBuff(target, "AzirMota") and myHero:GetSpellData(3).ammo > 0 then
+			    Control.CastSpell(HK_R,target)
+				end
+			end
+		end
+	end
+end
+
+function Azir:Zhonya()
+    local target = CurrentTarget(500)
+	if target == nil then return end
+		if AIO.Items.Zhonya:Value() and myHero.pos:DistanceTo(target.pos) < 500 and myHero.health<=myHero.maxHealth * AIO.Items.ZhonyaHp:Value()/100 and not HasBuff(myHero, "camouflagestealth") then
+		local Zhonya = GetInventorySlotItem(3157) or GetInventorySlotItem(2421)
+		if Zhonya then
+			Control.CastSpell(HKITEM[Zhonya])
+		end
+	end
+	end
+function Azir:Items()	
+	local target = CurrentTarget(700)
+	if target == nil then return end
+		if AIO.Items.Protobelt:Value() then
+		local protobelt = GetInventorySlotItem(3152)
+		if protobelt and EnemyInRange(700) then
+			Control.CastSpell(HKITEM[protobelt], target)
+		end
+	end
+	
+	local target = CurrentTarget(800)
+	if target == nil then return end
+		if AIO.Items.GLP:Value() then
+		local GLP = GetInventorySlotItem(3030)
+		if GLP and EnemyInRange(800) then
+			Control.CastSpell(HKITEM[GLP], target)
+		end
+	end
+	
+	local target = CurrentTarget(700)
+	if target == nil then return end
+		if AIO.Items.Gunblade:Value() then
+		local Gunblade = GetInventorySlotItem(3146) or GetInventorySlotItem(3144)
+		if Gunblade and EnemyInRange(700 ) then
+			Control.CastSpell(HKITEM[Gunblade], target)
+		end
+	end
+	
+end
+
+function Azir:IgniteSteal()
+	local target = CurrentTarget(600)
+	if target == nil then return end
+	if AIO.Killsteal.Ignite:Value() and target then
+		if EnemyInRange(600) then 
+			local IgniteDMG = 50+20*myHero.levelData.lvl
+			if IgniteDMG >= HpPred(target,1) + target.hpRegen * 2 then
+        if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" and Ready(SUMMONER_1) then
+            Control.CastSpell(HK_SUMMONER_1, target)
+        elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" and Ready(SUMMONER_2) then
+            Control.CastSpell(HK_SUMMONER_2, target)				
+			end
+			end
+		end
+	end
+	end
 
 Callback.Add("Load",function() _G[myHero.charName]() end)
