@@ -1,4 +1,4 @@
-local Heroes = {"Lucian","Morgana","Twitch","Jhin","Ashe","Alistar","Ahri","Azir","Blitzcrank","Draven","Ezreal","Fizz","Jinx","Kalista","KogMaw","Leblanc","LeeSin","Lux","Nasus","Nidalee","Orianna","Syndra","Teemo","Thresh","Tristana","Caitlyn","Veigar","Yasuo","Zed", "Annie","Akali"}
+local Heroes = {"Malzahar","Lucian","Morgana","Twitch","Jhin","Ashe","Alistar","Ahri","Azir","Blitzcrank","Draven","Ezreal","Fizz","Jinx","Kalista","KogMaw","Leblanc","LeeSin","Lux","Nasus","Nidalee","Orianna","Syndra","Teemo","Thresh","Tristana","Caitlyn","Veigar","Yasuo","Zed", "Annie","Akali"}
 if not table.contains(Heroes, myHero.charName) then return end
 
 require "DamageLib"
@@ -14371,7 +14371,409 @@ function Lucian:KillstealW()
 	end
 end
 
+class "Malzahar"
 
+
+function Malzahar:LoadSpells()
+
+	Q = {Range = 900, Delay = 0.40, Width = 10, Speed = 1600, Collision = false, aoe = false}
+	W = {Range = 150}
+	E = {Range = 650}
+	R = {Range = 700}
+end
+
+function Malzahar:LoadMenu()
+	AIO = MenuElement({type = MENU, id = "Malzahar", name = "Kypo's AIO: Malzahar", leftIcon = AIOIcon})
+	AIO:MenuElement({id = "Combo", name = "Combo", type = MENU})
+	AIO.Combo:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Combo:MenuElement({id = "UseW", name = "W", value = true})
+	AIO.Combo:MenuElement({id = "UseE", name = "E", value = true})
+	AIO.Combo:MenuElement({id = "RKey", name = "R key", key = string.byte("R")})
+	AIO.Combo:MenuElement({id = "RR", name = "R KS on:", value = true, type = MENU})
+	for i, hero in pairs(GetEnemyHeroes()) do
+	AIO.Combo.RR:MenuElement({id = "UseR"..hero.charName, name = "Use R on: "..hero.charName, value = true})
+	end
+	AIO.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
+		
+	AIO:MenuElement({id = "Harass", name = "Harass", type = MENU})
+	AIO.Harass:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Harass:MenuElement({id = "AutoEE", name = "Auto E Toggle", value = false, toggle = true, key = string.byte("U")})
+	AIO.Harass:MenuElement({id = "harassActive", name = "Harass key", key = string.byte("V")})
+	
+	AIO:MenuElement({id = "Lasthit", name = "Lasthit", type = MENU})
+	AIO.Lasthit:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Lasthit:MenuElement({id = "UseE", name = "E", value = true})
+	AIO.Lasthit:MenuElement({id = "lasthitActive", name = "Lasthit key", key = string.byte("X")})
+	
+	AIO:MenuElement({id = "Clear", name = "Clear", type = MENU})
+	AIO.Clear:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Clear:MenuElement({id = "clearActive", name = "Clear key", key = string.byte("C")})
+	
+	AIO:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
+	AIO.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.Killsteal:MenuElement({id = "UseE", name = "E", value = false})
+	AIO.Killsteal:MenuElement({id = "UseIG", name = "Use Ignite", value = true})
+
+	AIO:MenuElement({id = "isCC", name = "CC Settings", type = MENU})
+	AIO.isCC:MenuElement({id = "UseQ", name = "Q", value = true})
+	AIO.isCC:MenuElement({id = "UseE", name = "E", value = false})
+
+	AIO:MenuElement({id = "Drawings", name = "Drawings", type = MENU})
+	--Q
+	AIO.Drawings:MenuElement({id = "Q", name = "Draw Q range", type = MENU})
+    AIO.Drawings.Q:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.Q:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(180, 227, 29, 191)})
+	--R
+	AIO.Drawings:MenuElement({id = "R", name = "Draw R range", type = MENU})
+    AIO.Drawings.R:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.R:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.R:MenuElement({id = "Color", name = "Color", color = Draw.Color(180, 227, 29, 191)})
+
+	AIO.Drawings:MenuElement({id = "DrawDamage", name = "Draw damage on HPbar", value = true})
+    AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
+
+	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	
+	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
+	AIO:MenuElement({id = "blank", type = SPACE , name = "by "..Author.. ""})
+end
+
+
+function Malzahar:__init()
+	
+	self:LoadSpells()
+	self:LoadMenu()
+	Callback.Add("Tick", function() self:Tick() end)
+	Callback.Add("Draw", function() self:Draw() end)
+	local orbwalkername = ""
+	if _G.SDK then
+		orbwalkername = "IC'S orbwalker"		
+	elseif _G.EOW then
+		orbwalkername = "EOW"	
+	elseif _G.GOS then
+		orbwalkername = "Noddy orbwalker"
+	else
+		orbwalkername = "Orbwalker not found"
+	end
+end
+
+function Malzahar:Tick()
+        if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true or ExtLibEvade and ExtLibEvade.Evading == true then return end
+	if AIO.Harass.harassActive:Value() then
+		self:Harass()
+	end
+	if AIO.Clear.clearActive:Value() then
+		self:Clear()
+	end
+	if AIO.Lasthit.lasthitActive:Value() then
+		self:Lasthit()
+		self:LasthitE()
+	end
+	if AIO.Combo.comboActive:Value() then
+		if myHero.activeSpell.isChanneling == true then return end
+		self:Combo()
+	end
+	if AIO.Killsteal.UseIG:Value() then
+	if myHero.activeSpell.isChanneling == true then return end
+		self:UseIG()
+	end
+		self:KillstealQ()
+		self:KillstealE()
+		self:KillstealR()
+		self:SpellonCCQ()
+		self:SpellonCCE()
+		self:AutoE()
+		self:RKey()
+end
+
+function Malzahar:UseIG()
+    local target = CurrentTarget(600)
+	if AIO.Killsteal.UseIG:Value() and target then 
+		local IGdamage = 50 + 20 * myHero.levelData.lvl
+   		if myHero:GetSpellData(SUMMONER_1).name == "SummonerDot" then
+       		if ValidTarget(target, 600, true, myHero) and Ready(SUMMONER_1) then
+				if IGdamage >= HpPred(target, 1) + target.hpRegen * 1 then
+					Control.CastSpell(HK_SUMMONER_1, target)
+				end
+       		end
+		elseif myHero:GetSpellData(SUMMONER_2).name == "SummonerDot" then
+        	if ValidTarget(target, 600, true, myHero) and Ready(SUMMONER_2) then
+				if IGdamage >= HpPred(target, 1) + target.hpRegen * 1 then
+					Control.CastSpell(HK_SUMMONER_2, target)
+				end
+       		end
+		end
+	end
+end
+
+function Malzahar:Clear()
+	if Ready(_Q) and AIO.Clear.UseQ:Value() then
+	local qMinions = {}
+	local mobs = {}
+	
+	for i = 1, Game.MinionCount() do
+		local minion = Game.Minion(i)
+		if  ValidTarget(minion,900)  then
+			if minion.team == 300 then
+				mobs[#mobs+1] = minion
+			elseif minion.isEnemy  then
+				qMinions[#qMinions+1] = minion
+			end	
+	end	
+		local BestPos, BestHit = GetBestCircularFarmPosition(900,60 + 80, qMinions)
+		if BestHit >= 3 and Ready(_Q) then
+			CastSpell(HK_Q,BestPos)
+		end
+	end
+end
+end
+
+function Malzahar:Draw()
+if AIO.Harass.AutoEE:Value() == true then
+			local textPos = myHero.pos:To2D()
+			Draw.Text("Auto E ON", 20, textPos.x - 40, textPos.y + 100, Draw.Color(255, 60, 145, 201))
+			end
+if AIO.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, Q.Range , AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
+if AIO.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, R.Range, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
+
+		if AIO.Drawings.DrawDamage:Value() then
+		for i, hero in pairs(GetEnemyHeroes()) do
+			local barPos = hero.hpBar
+			if not hero.dead and hero.pos2D.onScreen and barPos.onScreen and hero.visible then
+				local QDamage = (Ready(_Q) and getdmg("Q",hero,myHero) or 0)
+				local WDamage = (Ready(_W) and getdmg("W",hero,myHero) or 0)
+				local EDamage = (Ready(_E) and getdmg("E",hero,myHero) or 0)
+				local RDamage = (Ready(_R) and getdmg("R",hero,myHero) or 0)
+				local damage = QDamage + WDamage + EDamage + RDamage
+				if damage > hero.health then
+					Draw.Text("KILLABLE", 24, hero.pos2D.x, hero.pos2D.y,Draw.Color(255, 200, 200, 25))
+				if RDamage > hero.health and Ready(_R) then
+					Draw.Text("R KILLABLE", 35, hero.pos2D.x - 75, hero.pos2D.y - 190,Draw.Color(200, 255, 87, 51))		
+				else
+					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
+					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
+					local xPosStart = barPos.x + barXOffset + percentHealthAfterDamage * 100
+					Draw.Line(xPosStart, barPos.y + barYOffset, xPosEnd, barPos.y + barYOffset, 10, AIO.Drawings.HPColor:Value()) end
+				end
+			end
+		end	
+end	
+		
+    if Ready(_Q) then
+			local target = CurrentTarget(Q.Range)
+			if target == nil then return end
+
+			if (TPred) then
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
+				Draw.Circle(castpos, 60, 3, Draw.Color(255, 255, 000, 255))
+			end
+		end
+end
+
+function Malzahar:IsImmobileTarget(unit)
+		if unit == nil then return false end
+		for i = 0, unit.buffCount do
+			local buff = unit:GetBuff(i)
+			if buff and (buff.type == 5 or buff.type == 11 or buff.type == 29 or buff.type == 24 or buff.type == 28 or buff.type == 21 or buff.type == 22) and buff.count > 0 then
+				return true
+			end
+		end
+		return false	
+	end
+
+function Malzahar:Combo()
+	if myHero.activeSpell.isChanneling == true then return end
+    local target = CurrentTarget(Q.Range)
+    if target == nil then return end
+    if AIO.Combo.UseQ:Value() and target and Ready(_Q)then
+	    if EnemyInRange(Q.Range) then
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
+		    if (HitChance > 0 ) then
+				CastSpell(HK_Q, castpos)
+		    end
+	    end
+    end
+	
+    local target = CurrentTarget(E.Range)
+    if target == nil then return end
+    if AIO.Combo.UseE:Value() and target and Ready(_E) then
+	    if EnemyInRange(E.Range) then
+				CastSpell(HK_E, target)
+		    end
+	    end
+	
+    local target = CurrentTarget(E.Range - 200)
+    if target == nil then return end
+    if AIO.Combo.UseW:Value() and target and Ready(_W) then
+	    if EnemyInRange(E.Range) then
+			Control.CastSpell(HK_W)
+		    end
+	    end
+    end
+
+function Malzahar:Harass()
+	if myHero.activeSpell.isChanneling == true then return end
+    local target = CurrentTarget(Q.Range)
+    if target == nil then return end
+    if AIO.Combo.UseQ:Value() and target and Ready(_Q) then
+	    if EnemyInRange(Q.Range) then
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
+		    if (HitChance > 0 ) then
+				Control.CastSpell(HK_Q, target)
+		    end
+	    end
+    end
+end
+
+function Malzahar:QDMG()
+    local level = myHero:GetSpellData(_Q).level
+    local qdamage = (({70,105,140,175,210})[level] + 0.65 * myHero.ap)
+	return qdamage
+end
+
+function Malzahar:EDMG()
+    local level = myHero:GetSpellData(_E).level
+    local edamage = ({80, 115, 150, 185, 220})[level] + 0.7 * myHero.ap
+	return edamage
+end
+
+function Malzahar:RDMG()
+	local target = CurrentTarget(R.Range)
+    if target == nil then return end
+    local level = myHero:GetSpellData(_R).level
+    local rdamage = 2.5 * (({4, 6, 7})[level] / 100 + 0.015 * myHero.ap / 100) * target.maxHealth
+	return rdamage
+end
+
+function Malzahar:AutoE()
+	local target = CurrentTarget(E.Range)
+    if target == nil then return end
+	if target and Ready(_E) and EnemyInRange(E.Range) and AIO.Harass.AutoEE:Value() == true then
+		Control.CastSpell(HK_E, target)
+		end
+	end
+
+function Malzahar:Lasthit()
+	if myHero.activeSpell.isChanneling == true then return end
+	if Ready(_Q) then
+  		for i = 1, Game.MinionCount() do
+			local minion = Game.Minion(i)
+			local Qdamage = self:QDMG()
+			if myHero.pos:DistanceTo(minion.pos) < Q.Range and AIO.Lasthit.UseQ:Value() and minion.isEnemy and not minion.dead then
+				if Qdamage >= HpPred(minion,1) then
+				CastSpell(HK_Q,minion.pos)
+				end
+			end
+		end
+	end
+end
+
+function Malzahar:LasthitE()
+	if myHero.activeSpell.isChanneling == true then return end
+	if Ready(_E) then
+  		for i = 1, Game.MinionCount() do
+			local minion = Game.Minion(i)
+			local Edamage = self:EDMG()
+			if myHero.pos:DistanceTo(minion.pos) < E.Range and AIO.Lasthit.UseE:Value() and minion.isEnemy and not minion.dead then
+				if Edamage >= HpPred(minion,1) then
+				CastSpell(HK_E,minion)
+				end
+			end
+		end
+	end
+end
+
+function Malzahar:KillstealR()
+    local target = CurrentTarget(R.Range)
+	if target == nil then return end
+	if AIO.Combo.RR["UseR"..target.charName]:Value() and Ready(_R) then
+		if EnemyInRange(R.Range) then 
+			local Rdamage = self:RDMG()
+			if Rdamage >= HpPred(target,1) * 1.2 + target.hpRegen * 1 + target.magicResist + target.shieldAP then
+			if AIO.Combo.comboActive:Value() then
+			EnableOrb(false)
+			Control.CastSpell(HK_R, target)
+			DelayAction(function() EnableOrb(true) end, 2.6)
+			end
+		end
+	end
+	end
+	end
+
+function Malzahar:KillstealQ()
+	if myHero.activeSpell.isChanneling == true then return end
+	local target = CurrentTarget(Q.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseQ:Value() and target and Ready(_Q) then
+		if EnemyInRange(Q.Range) then 
+			local level = myHero:GetSpellData(_Q).level	
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, 0.40 , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
+		   	local Qdamage = Malzahar:QDMG()
+			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 + target.magicResist + target.shieldAP and not target.dead then
+			if (HitChance > 0 ) then
+				CastSpell(HK_Q, castpos)
+				end
+			end
+		end
+	end
+end
+
+function Malzahar:KillstealE()
+	if myHero.activeSpell.isChanneling == true then return end
+	local target = CurrentTarget(E.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseE:Value() and target and Ready(_E) then
+		if EnemyInRange(E.Range) then 
+		   	local Edamage = Malzahar:EDMG()
+			if Edamage >= HpPred(target,1) + target.hpRegen * 1 + target.magicResist + target.shieldAP and not target.dead then
+			Control.CastSpell(HK_E, target)
+				end
+			end
+		end
+	end
+
+function Malzahar:SpellonCCQ()
+	if myHero.activeSpell.isChanneling == true then return end
+    local target = CurrentTarget(Q.Range)
+	if target == nil then return end
+	if AIO.isCC.UseQ:Value() and target and Ready(_Q) then
+		if EnemyInRange(Q.Range) then 
+			local ImmobileEnemy = self:IsImmobileTarget(target)
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range,Q.Speed, myHero.pos, Q.ignorecol, Q.Type )
+			if ImmobileEnemy then
+			if (HitChance > 0 ) and not target.dead then
+				CastSpell(HK_Q, castpos)
+				end
+			end
+		end
+	end
+end
+
+function Malzahar:SpellonCCE()
+	if myHero.activeSpell.isChanneling == true then return end
+	local target = CurrentTarget(E.Range)
+    if target == nil then return end
+    if AIO.isCC.UseE:Value() and target and Ready(_E) then
+		local ImmobileEnemy = self:IsImmobileTarget(target)
+	    if EnemyInRange(E.Range) and ImmobileEnemy then
+			Control.CastSpell(HK_E, target)
+		end
+    end	
+ end
+ 
+ function Malzahar:RKey()
+	local target = CurrentTarget(R.Range)
+    if target == nil then return end
+    if AIO.Combo.RKey:Value() and target and Ready(_R) then
+	    if EnemyInRange(R.Range) then
+			EnableOrb(false)
+			Control.CastSpell(HK_R, target)
+			DelayAction(function() EnableOrb(true) end, 2.6) end
+    end	
+ end 
 	
 -- Utilities menu
 
